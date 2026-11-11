@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Internet untuk peta -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Lokasi pengguna -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <!-- Bluetooth untuk jam tangan SOS -->
+    <uses-permission
+        android:name="android.permission.BLUETOOTH"
+        android:maxSdkVersion="30" />
+
+    <uses-permission
+        android:name="android.permission.BLUETOOTH_ADMIN"
+        android:maxSdkVersion="30" />
+
+    <uses-permission
+        android:name="android.permission.BLUETOOTH_SCAN"
+        android:usesPermissionFlags="neverForLocation" />
+
+    <uses-permission
+        android:name="android.permission.BLUETOOTH_CONNECT" />
+
+    <application
+        android:name=".App"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Perjalanan">
+
+        <!-- API key Google Maps -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="ISI_API_KEY_GOOGLE_MAPS_ANDA" />
+
+        <activity
+            android:name=".AuthActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".PoliceProfileActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:windowSoftInputMode="adjustResize">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </activity>
+
+        <activity android:name=".HomeActivity" android:exported="false" />
+        <activity android:name=".PoliceDashboardActivity" android:exported="false" />
+        <activity android:name=".MapActivity" android:exported="false" />
+        <activity android:name=".ProfileActivity" android:exported="false" />
+        <activity android:name=".SettingsActivity" android:exported="false" />
+        <activity android:name=".EmergencyActivity" android:exported="false" />
+        <activity android:name=".VerifyCodeActivity" android:exported="false" />
+        <activity android:name=".ChangePasswordActivity" android:exported="false" />
+
+    </application>
+
+</manifest>

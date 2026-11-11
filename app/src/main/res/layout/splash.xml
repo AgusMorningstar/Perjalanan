@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/maroon_dark">
+
+    <!-- WAVE ATAS FULL WIDTH -->
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_gravity="top"
+        android:src="@drawable/bg_wave_top"
+        android:scaleType="fitXY"
+        android:contentDescription="@null"/>
+
+    <!-- WAVE BAWAH FULL WIDTH -->
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:layout_gravity="bottom"
+        android:src="@drawable/bg_wave_bottom"
+        android:scaleType="fitXY"
+        android:contentDescription="@null"/>
+
+    <!-- KONTEN DI TENGAH -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp">
+
+        <ImageView
+            android:layout_width="160dp"
+            android:layout_height="160dp"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/logo2"
+            app:tint="@color/cream" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/app_name"
+            android:textColor="@color/cream"
+            android:textSize="29sp"
+            android:letterSpacing="0.28"
+            android:fontFamily="sans-serif-medium"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/tagline"
+            android:textColor="@color/cream"
+            android:textSize="15sp"
+            android:textStyle="italic"
+            android:gravity="center"/>
+
+    </LinearLayout>
+
+</FrameLayout>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingHorizontal="10dp"
+    android:paddingBottom="8dp">
+
+    <View
+        android:id="@+id/sosGlow"
+        android:layout_width="match_parent"
+        android:layout_height="76dp"
+        android:background="@drawable/bg_sos_glow" />
+
+    <LinearLayout
+        android:id="@+id/sosPill"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_margin="8dp"
+        android:background="@drawable/bg_sos_pill"
+        android:elevation="6dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="10dp">
+
+        <FrameLayout
+            android:layout_width="48dp"
+            android:layout_height="48dp">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_circle_white_ring" />
+
+            <ImageView
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:layout_gravity="center"
+                android:background="@drawable/bg_circle_white"
+                android:padding="8dp"
+                android:src="@drawable/ic_warning"
+                app:tint="@color/sos_red" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvSosFloatLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SINYAL SOS · BARU SAJA"
+                android:textColor="@color/peach"
+                android:textSize="9.5sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvSosFloatMain"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="250 m dari Anda"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_chip_white"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="9dp"
+            android:text="LIHAT"
+            android:textColor="@color/sos_red"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvSosBadge"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="6dp"
+        android:background="@drawable/bg_badge_count"
+        android:elevation="8dp"
+        android:gravity="center"
+        android:text="1"
+        android:textColor="@color/white"
+        android:textSize="11sp"
+        android:textStyle="bold" />
+</FrameLayout>

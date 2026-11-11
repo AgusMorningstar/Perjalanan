@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/cream">
+
+    <!-- WAVE ATAS -->
+    <ImageView
+        android:id="@+id/bg_wave_top"
+        android:layout_width="match_parent"
+        android:layout_height="110dp"
+        android:layout_gravity="top"
+        android:src="@drawable/bg_wave_top"
+        android:scaleType="fitXY"
+        android:contentDescription="@null" />
+
+    <!-- WAVE BAWAH -->
+    <ImageView
+        android:id="@+id/waveBottom"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_gravity="bottom"
+        android:src="@drawable/bg_wave_bottom"
+        android:scaleType="fitXY"
+        android:contentDescription="@null" />
+
+    <!-- KONTEN LOGIN -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:background="@android:color/transparent"
+        android:clipToPadding="false"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:paddingStart="28dp"
+            android:paddingEnd="28dp"
+            android:paddingBottom="24dp">
+
+            <!-- JARAK WAVE ATAS -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="72dp">
+            </FrameLayout>
+
+            <!-- LOGO -->
+            <ImageView
+                android:layout_width="112dp"
+                android:layout_height="112dp"
+                android:layout_marginTop="14dp"
+                android:src="@drawable/logomaroon"
+                android:contentDescription="@string/app_name" />
+
+            <!-- NAMA APLIKASI -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/app_name"
+                android:textColor="@color/maroon"
+                android:textSize="23sp"
+                android:letterSpacing="0.28"
+                android:fontFamily="sans-serif-medium" />
+
+            <!-- TAGLINE -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/tagline"
+                android:textColor="@color/maroon"
+                android:textSize="14sp"
+                android:textStyle="italic" />
+
+            <!-- FORM LOGIN -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:orientation="vertical">
+
+                <!-- EMAIL -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/email"
+                    app:boxBackgroundMode="none"
+                    app:startIconDrawable="@android:drawable/ic_dialog_email">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/emailInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="58dp"
+                        android:background="@drawable/bg_input"
+                        android:paddingStart="18dp"
+                        android:paddingEnd="18dp"
+                        android:inputType="textEmailAddress"
+                        android:textColor="@color/text_primary" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- PASSWORD -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="18dp"
+                    android:hint="@string/password"
+                    app:boxBackgroundMode="none"
+                    app:startIconDrawable="@android:drawable/ic_lock_lock"
+                    app:endIconMode="password_toggle">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/passwordInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="58dp"
+                        android:background="@drawable/bg_input"
+                        android:paddingStart="18dp"
+                        android:paddingEnd="18dp"
+                        android:inputType="textPassword"
+                        android:textColor="@color/text_primary" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- TOMBOL LOGIN -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/signInButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="58dp"
+                    android:layout_marginTop="24dp"
+                    android:text="@string/sign_in"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.12"
+                    app:backgroundTint="@color/maroon"
+                    app:cornerRadius="18dp" />
+
+                <!-- PEMISAH -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="18dp"
+                    android:gravity="center"
+                    android:text="atau"
+                    android:textColor="@color/maroon"
+                    android:textSize="13sp" />
+
+                <!-- LOGIN GOOGLE -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/googleSignInButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="14dp"
+                    android:text="Login dengan Google"
+                    android:textColor="@color/maroon"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:backgroundTint="@color/white"
+                    app:cornerRadius="18dp"
+                    app:strokeColor="@color/maroon"
+                    app:strokeWidth="1dp"
+                    app:icon="@drawable/ic_google"
+                    app:iconGravity="textStart"
+                    app:iconTint="@null"
+                    app:iconSize="22dp" />
+
+                <!-- LUPA PASSWORD -->
+                <TextView
+                    android:id="@+id/forgotPasswordLink"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="18dp"
+                    android:padding="8dp"
+                    android:text="@string/forgot_password"
+                    android:textColor="@color/maroon"
+                    android:textSize="14sp" />
+
+                <!-- DAFTAR -->
+                <TextView
+                    android:id="@+id/registerLink"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="8dp"
+                    android:padding="8dp"
+                    android:text="Belum punya akun? Daftar"
+                    android:textColor="@color/maroon"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+            <!-- RUANG WAVE BAWAH -->
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="100dp" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</FrameLayout>

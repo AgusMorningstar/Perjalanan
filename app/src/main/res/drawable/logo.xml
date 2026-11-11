@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="160dp"
+    android:height="160dp"
+    android:viewportWidth="160"
+    android:viewportHeight="160">
+
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="@color/maroon"
+        android:strokeWidth="7"
+        android:strokeLineCap="round"
+        android:pathData="M48,34 C61,7 99,7 112,34"/>
+
+    <path
+        android:fillColor="@color/maroon"
+        android:pathData="M48,42 C29,35 21,20 17,9 C34,25 45,28 57,38 L75,67 C60,61 44,56 27,54 C18,52 10,46 6,39 C21,45 33,43 48,42 Z"/>
+
+    <path
+        android:fillColor="@color/maroon"
+        android:pathData="M112,42 C131,35 139,20 143,9 C126,25 115,28 103,38 L85,67 C100,61 116,56 133,54 C142,52 150,46 154,39 C139,45 127,43 112,42 Z"/>
+
+    <path
+        android:fillColor="@color/maroon"
+        android:pathData="M51,52 C35,52 24,47 12,42 C22,59 39,67 60,72 L76,91 C69,75 61,63 51,52 Z"/>
+
+    <path
+        android:fillColor="@color/maroon"
+        android:pathData="M109,52 C125,52 136,47 148,42 C138,59 121,67 100,72 L84,91 C91,75 99,63 109,52 Z"/>
+
+    <path
+        android:fillColor="@color/maroon"
+        android:pathData="M44,75 C56,78 67,88 80,111 C93,88 104,78 116,75 C107,95 94,116 80,145 C66,116 53,95 44,75 Z"/>
+
+</vector>

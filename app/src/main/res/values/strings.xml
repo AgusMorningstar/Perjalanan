@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+
+    <!-- Aplikasi -->
+    <string name="app_name">PERJALANAN</string>
+    <string name="tagline">Langkah kecil menuju tujuan besar</string>
+
+    <!-- Login dan Register -->
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="username">Username</string>
+    <string name="phone">Nomor HP</string>
+    <string name="full_name">Nama Lengkap</string>
+    <string name="sign_in">SIGN IN</string>
+    <string name="sign_up">SIGN UP</string>
+    <string name="forgot_password">Lupa password?</string>
+    <string name="forgot_title">Lupa Password?</string>
+    <string name="forgot_description">Masukkan email yang terdaftar, kami akan mengirimkan link untuk mereset password Anda.</string>
+    <string name="send_link">KIRIM LINK</string>
+    <string name="back_to_login">Kembali ke login</string>
+    <string name="skip">Skip ›</string>
+
+    <!-- Navigasi -->
+    <string name="nav_home">Beranda</string>
+    <string name="nav_location">Lokasi</string>
+    <string name="nav_profile">Profil</string>
+    <string name="nav_emergency">Darurat</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard_title">Dashboard</string>
+    <string name="heart_rate">Detak Jantung</string>
+    <string name="motion_sensor">Sensor Gerak</string>
+    <string name="watch_status">Status Jam Tangan SOS</string>
+    <string name="device_connected">Terhubung</string>
+    <string name="device_disconnected">Belum Terhubung</string>
+
+    <!-- Lokasi -->
+    <string name="location_title">Lokasi Korban</string>
+    <string name="start_navigation">Mulai Navigasi</string>
+    <string name="waiting_location">Menunggu lokasi korban...</string>
+
+    <!-- Profil -->
+    <string name="profile_title">Profil Saya</string>
+    <string name="role">Role</string>
+    <string name="settings">Pengaturan</string>
+    <string name="logout">Keluar</string>
+
+    <!-- Darurat -->
+    <string name="emergency_title">Nomor Darurat</string>
+    <string name="police_number">110</string>
+    <string name="call_police">Hubungi Polisi</string>
+
+</resources>

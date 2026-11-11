@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+
+    <style name="Theme.Perjalanan"
+        parent="Theme.Material3.DayNight.NoActionBar">
+
+        <!-- WARNA UTAMA -->
+        <item name="colorPrimary">@color/maroon</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <item name="colorSecondary">@color/maroon_light</item>
+        <item name="colorOnSecondary">@color/white</item>
+
+        <!-- BACKGROUND -->
+        <item name="android:colorBackground">@color/cream</item>
+        <item name="colorSurface">@color/white</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+
+        <!-- STATUS BAR -->
+        <item name="android:statusBarColor">#202020</item>
+        <item name="android:windowLightStatusBar">false</item>
+
+        <!-- NAVIGATION BAR -->
+        <item name="android:navigationBarColor">#202020</item>
+        <item name="android:windowLightNavigationBar">false</item>
+
+        <!-- FONT -->
+        <item name="android:fontFamily">sans-serif</item>
+
+    </style>
+
+</resources>
