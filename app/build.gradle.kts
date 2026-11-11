@@ -18,9 +18,7 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
-
-        testInstrumentationRunner =
-            "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -42,28 +40,36 @@ android {
 }
 
 dependencies {
-
-
-    // Material dan AppCompat untuk XML
+    // Material & AppCompat (dipertahankan untuk themes.xml)
     implementation("com.google.android.material:material:1.12.0")
     implementation("androidx.appcompat:appcompat:1.7.0")
+
+    // Google Maps
     implementation("com.google.android.gms:play-services-maps:18.2.0")
 
-    // Fragment untuk navigasi halaman
-    implementation("androidx.fragment:fragment-ktx:1.8.5")
-
-    // OpenStreetMap
+    // OpenStreetMap (opsional, dipertahankan)
     implementation("org.osmdroid:osmdroid-android:6.1.20")
 
-    // Jetpack Compose - tetap dipertahankan
+    // Jetpack Compose BOM
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
+    implementation("androidx.compose.material:material-icons-extended")
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+
+    // Navigation Compose
+    implementation(libs.androidx.navigation.compose)
+
+    // ViewModel + StateFlow + Lifecycle
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+
+    // DataStore (pengganti SharedPreferences)
+    implementation(libs.androidx.datastore.preferences)
 
     // Unit test
     testImplementation(libs.junit)

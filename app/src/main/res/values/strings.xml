@@ -3,7 +3,7 @@
 <resources>
 
     <!-- Aplikasi -->
-    <string name="app_name">PERJALANAN</string>
+    <string name="app_name">Perjalanan</string>
     <string name="tagline">Langkah kecil menuju tujuan besar</string>
 
     <!-- Login dan Register -->

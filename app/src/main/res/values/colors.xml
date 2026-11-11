@@ -2,10 +2,12 @@
 <resources>
     <color name="maroon">#7B0F1A</color>
     <color name="maroon_dark">#5E0A13</color>
+    <color name="maroon_light">#9E1B28</color>
     <color name="sos_red">#B3141F</color>
     <color name="cream">#FFF4EC</color>
     <color name="card">#FFFBF8</color>
     <color name="peach">#F3C9BB</color>
+    <color name="pink_light">#F9E6E1</color>
     <color name="gold_badge">#F2D7A6</color>
     <color name="stroke">#EAD7CC</color>
     <color name="text_dark">#3A0A10</color>

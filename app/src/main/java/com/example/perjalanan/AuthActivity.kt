@@ -2,24 +2,32 @@ package com.example.perjalanan
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.button.MaterialButton
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import com.example.perjalanan.ui.screens.auth.LoginScreen
+import com.example.perjalanan.ui.theme.PerjalananTheme
 
-class AuthActivity : AppCompatActivity() {
+class AuthActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.login)
-
-        findViewById<MaterialButton>(R.id.signInButton)?.setOnClickListener {
-            val intent = Intent(this, HomeActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
-
-        findViewById<TextView>(R.id.forgotPasswordLink)?.setOnClickListener {
-            val intent = Intent(this, VerifyCodeActivity::class.java)
-            startActivity(intent)
+        enableEdgeToEdge()
+        setContent {
+            PerjalananTheme {
+                LoginScreen(
+                    onNavigateToHome = {
+                        startActivity(Intent(this, HomeActivity::class.java))
+                        finish()
+                    },
+                    onNavigateToPoliceDashboard = {
+                        startActivity(Intent(this, PoliceDashboardActivity::class.java))
+                        finish()
+                    },
+                    onNavigateToForgotPassword = {
+                        startActivity(Intent(this, VerifyCodeActivity::class.java))
+                    }
+                )
+            }
         }
     }
 }
