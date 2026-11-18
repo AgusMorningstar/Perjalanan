@@ -10,5 +10,6 @@ enum class Language {
 
 data class AppSettings(
     val themeMode: ThemeMode = ThemeMode.LIGHT,
-    val language: Language = Language.INDONESIA
+    val language: Language = Language.INDONESIA,
+    val isOnboardingCompleted: Boolean = false
 )

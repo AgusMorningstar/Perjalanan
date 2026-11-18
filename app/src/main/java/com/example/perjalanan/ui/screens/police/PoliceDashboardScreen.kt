@@ -53,8 +53,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.example.perjalanan.data.model.SosReport
+import com.example.perjalanan.data.notification.SosNotificationHelper
 import com.example.perjalanan.ui.components.PerjalananTopBar
+import com.example.perjalanan.ui.components.PoliceBottomBar
+import com.example.perjalanan.ui.components.SosAlertData
+import com.example.perjalanan.ui.components.SosEmergencyDialog
+import com.example.perjalanan.ui.localization.LocalAppStrings
 import com.example.perjalanan.ui.navigation.Screen
 import com.example.perjalanan.ui.theme.CardBg
 import com.example.perjalanan.ui.theme.Cream
@@ -74,10 +82,14 @@ import com.example.perjalanan.ui.theme.White
 fun PoliceDashboardScreen(
     onNavigateToPoliceProfile: () -> Unit,
     onNavigateBack: () -> Unit,
+    onNavigateToMap: () -> Unit = {},
     viewModel: PoliceDashboardViewModel = viewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
+    val strings = LocalAppStrings.current
+    var activeSosAlert by remember { mutableStateOf<SosAlertData?>(null) }
 
     LaunchedEffect(state.actionMessage) {
         state.actionMessage?.let { msg ->
@@ -86,18 +98,50 @@ fun PoliceDashboardScreen(
         }
     }
 
+    // POP-UP DIALOG SINYAL DARURAT (Sesuai dialog_sos.xml)
+    if (activeSosAlert != null) {
+        SosEmergencyDialog(
+            data = activeSosAlert!!,
+            onAcceptAndNavigate = {
+                val alert = activeSosAlert!!
+                viewModel.acceptReport(alert.id)
+                activeSosAlert = null
+                onNavigateToMap()
+            },
+            onMuteAlarm = {
+                viewModel.stopAlarm()
+                activeSosAlert = null
+            },
+            onDismiss = {
+                activeSosAlert = null
+            }
+        )
+    }
+
     Scaffold(
         topBar = {
             PerjalananTopBar(
-                title = "Dashboard Kepolisian",
+                title = strings.policeDashboardTitle,
                 onBackClick = onNavigateBack,
                 actions = {
                     IconButton(onClick = onNavigateToPoliceProfile) {
                         Icon(
                             imageVector = Icons.Default.Person,
-                            contentDescription = "Profil Petugas",
+                            contentDescription = strings.policeProfileTitle,
                             tint = White
                         )
+                    }
+                }
+            )
+        },
+        bottomBar = {
+            PoliceBottomBar(
+                currentRoute = Screen.PoliceDashboard.route,
+                onNavigate = { screen ->
+                    when (screen) {
+                        Screen.PoliceMap -> onNavigateToMap()
+                        Screen.PoliceProfile -> onNavigateToPoliceProfile()
+                        else -> {}
                     }
                 }
             )
@@ -166,7 +210,7 @@ fun PoliceDashboardScreen(
                             .padding(horizontal = 10.dp, vertical = 4.dp)
                     ) {
                         Text(
-                            text = if (state.officer.isOnline) "● ONLINE" else "OFFLINE",
+                            text = if (state.officer.isOnline) strings.statusOnline else strings.statusOffline,
                             color = if (state.officer.isOnline) GreenSafe else SosRed,
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Bold
@@ -180,7 +224,7 @@ fun PoliceDashboardScreen(
             // SUMMARY CARDS (Laporan Aktif, Selesai, Unit)
             Row(modifier = Modifier.fillMaxWidth()) {
                 SummaryBox(
-                    title = "Aktif",
+                    title = strings.summaryActive,
                     count = "${state.officer.activeReportsCount}",
                     color = SosRed,
                     bg = SoftRed,
@@ -188,7 +232,7 @@ fun PoliceDashboardScreen(
                 )
                 Spacer(modifier = Modifier.width(10.dp))
                 SummaryBox(
-                    title = "Selesai",
+                    title = strings.summaryResolved,
                     count = "${state.officer.resolvedReportsCount}",
                     color = GreenSafe,
                     bg = SoftGreen,
@@ -196,7 +240,7 @@ fun PoliceDashboardScreen(
                 )
                 Spacer(modifier = Modifier.width(10.dp))
                 SummaryBox(
-                    title = "Unit Siaga",
+                    title = strings.summaryStandbyUnits,
                     count = "${state.officer.availableUnitsCount}",
                     color = Maroon,
                     bg = SoftPeach,
@@ -231,13 +275,13 @@ fun PoliceDashboardScreen(
                             Spacer(modifier = Modifier.width(10.dp))
                             Column {
                                 Text(
-                                    text = "Alarm Sirine SOS",
+                                    text = strings.sosSirenAlarm,
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = TextDark
                                 )
                                 Text(
-                                    text = if (state.officer.isAlarmActive) "Perangkat AKTIF berbunyi" else "Alarm NONAKTIF",
+                                    text = if (state.officer.isAlarmActive) strings.sirenActiveDesc else strings.sirenInactiveDesc,
                                     fontSize = 11.sp,
                                     color = TextGray
                                 )
@@ -257,7 +301,7 @@ fun PoliceDashboardScreen(
                     Spacer(modifier = Modifier.height(14.dp))
 
                     Text(
-                        text = "Volume Sirine Alarm: ${state.officer.alarmVolume}%",
+                        text = "${strings.sirenVolume}: ${state.officer.alarmVolume}%",
                         fontSize = 12.sp,
                         color = TextDark,
                         fontWeight = FontWeight.Medium
@@ -283,7 +327,7 @@ fun PoliceDashboardScreen(
                             shape = RoundedCornerShape(12.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = SosRed)
                         ) {
-                            Text("Matikan Alarm Sekarang", fontWeight = FontWeight.Bold, color = White)
+                            Text(strings.btnStopAlarm, fontWeight = FontWeight.Bold, color = White)
                         }
                     }
                 }
@@ -292,18 +336,73 @@ fun PoliceDashboardScreen(
             Spacer(modifier = Modifier.height(20.dp))
 
             // INCOMING SOS REPORTS
-            Text(
-                text = "Laporan Sinyal Darurat Masuk",
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Bold,
-                color = Maroon,
-                modifier = Modifier.padding(bottom = 12.dp)
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 12.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = strings.incomingSosReports,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Maroon
+                )
+
+                OutlinedButton(
+                    onClick = {
+                        val alertData = SosAlertData(
+                            id = "SOS-001",
+                            victimName = "Salsabilaa",
+                            locationAddress = "Jl. Pendidikan No.12, Makassar",
+                            distanceText = "1,8 km",
+                            etaText = "6 mnt",
+                            heartRate = 128
+                        )
+                        // 1. Tampilkan Pop-up Dialog In-App (dialog_sos.xml)
+                        activeSosAlert = alertData
+                        // 2. Picu Heads-up Notification Sistem (pop-up banner layar atas)
+                        SosNotificationHelper.showEmergencyHeadsUpNotification(
+                            context = context,
+                            data = alertData,
+                            isPoliceRole = true
+                        )
+                    },
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = SosRed),
+                    border = ButtonDefaults.outlinedButtonBorder.copy(
+                        brush = androidx.compose.ui.graphics.SolidColor(SosRed),
+                        width = 1.dp
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Warning,
+                        contentDescription = null,
+                        tint = SosRed,
+                        modifier = Modifier.size(14.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(strings.btnTestPoliceSos, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                }
+            }
 
             state.reports.forEach { report ->
                 SosReportCard(
                     report = report,
-                    onAccept = { viewModel.acceptReport(report.id) }
+                    onAccept = { viewModel.acceptReport(report.id) },
+                    onCardClick = {
+                        activeSosAlert = SosAlertData(
+                            id = report.id,
+                            victimName = report.victimName,
+                            locationAddress = report.locationAddress,
+                            distanceText = "1,8 km",
+                            etaText = "6 mnt",
+                            heartRate = report.heartRate,
+                            latitude = report.latitude,
+                            longitude = report.longitude
+                        )
+                    }
                 )
                 Spacer(modifier = Modifier.height(12.dp))
             }
@@ -339,10 +438,13 @@ fun SummaryBox(
 @Composable
 fun SosReportCard(
     report: SosReport,
-    onAccept: () -> Unit
+    onAccept: () -> Unit,
+    onCardClick: () -> Unit = {}
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onCardClick() },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = CardBg),
         border = CardDefaults.outlinedCardBorder().copy(
@@ -404,7 +506,7 @@ fun SosReportCard(
                     shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Maroon)
                 ) {
-                    Text("Terima & Tangani Laporan", fontWeight = FontWeight.Bold, color = White, fontSize = 13.sp)
+                    Text(LocalAppStrings.current.btnAcceptHandleReport, fontWeight = FontWeight.Bold, color = White, fontSize = 13.sp)
                 }
             } else {
                 Box(
@@ -416,7 +518,7 @@ fun SosReportCard(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "✓ Laporan Sedang Ditangani",
+                        text = LocalAppStrings.current.statusReportHandled,
                         color = GreenSafe,
                         fontWeight = FontWeight.Bold,
                         fontSize = 12.sp

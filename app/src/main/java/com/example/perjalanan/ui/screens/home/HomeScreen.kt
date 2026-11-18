@@ -26,14 +26,18 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BatteryStd
+import androidx.compose.material.icons.filled.Bluetooth
+import androidx.compose.material.icons.filled.BluetoothConnected
 import androidx.compose.material.icons.filled.DirectionsRun
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.Power
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Shield
+import androidx.compose.material.icons.filled.ShowChart
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -63,7 +67,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import com.example.perjalanan.data.ble.BleConnectionState
+import com.example.perjalanan.data.notification.SosNotificationHelper
+import com.example.perjalanan.ui.components.BleDeviceDialog
 import com.example.perjalanan.ui.components.PerjalananBottomBar
+import com.example.perjalanan.ui.components.SosAlertData
+import com.example.perjalanan.ui.components.SosEmergencyDialog
+import com.example.perjalanan.ui.localization.LocalAppStrings
 import com.example.perjalanan.ui.navigation.Screen
 import com.example.perjalanan.ui.theme.AlertEnd
 import com.example.perjalanan.ui.theme.AlertStart
@@ -90,12 +103,47 @@ fun HomeScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
+    val strings = LocalAppStrings.current
+    var activeIncomingSos by remember { mutableStateOf<SosAlertData?>(null) }
 
     LaunchedEffect(state.sosSentMessage) {
         state.sosSentMessage?.let { msg ->
             snackbarHostState.showSnackbar(msg)
             viewModel.clearSosMessage()
         }
+    }
+
+    // POP-UP DIALOG SINYAL DARURAT MASUK DARI KORBAN TERDEKAT (dialog_sos.xml)
+    if (activeIncomingSos != null) {
+        SosEmergencyDialog(
+            data = activeIncomingSos!!,
+            onAcceptAndNavigate = {
+                activeIncomingSos = null
+                onNavigate(Screen.Map)
+            },
+            onMuteAlarm = {
+                activeIncomingSos = null
+            },
+            onDismiss = {
+                activeIncomingSos = null
+            }
+        )
+    }
+
+    if (state.isBleDialogOpen) {
+        BleDeviceDialog(
+            connectionState = state.bleState,
+            connectedDeviceName = state.connectedDeviceName,
+            discoveredDevices = state.discoveredDevices,
+            lastSavedDevice = state.lastSavedDevice,
+            errorMessage = state.bleErrorMessage,
+            onStartScan = viewModel::startBleScan,
+            onStopScan = viewModel::stopBleScan,
+            onConnect = viewModel::connectDevice,
+            onDisconnect = viewModel::disconnectDevice,
+            onDismiss = viewModel::closeBleDialog
+        )
     }
 
     if (state.isSosDialogOpen) {
@@ -285,14 +333,91 @@ fun HomeScreen(
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
                     color = TextDark,
-                    modifier = Modifier.padding(bottom = 12.dp)
+                    modifier = Modifier.padding(bottom = 10.dp)
                 )
+
+                // BLE Smartwatch Status Banner
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 12.dp),
+                    shape = RoundedCornerShape(14.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = if (state.bleState == BleConnectionState.CONNECTED) SoftGreen else SoftPeach
+                    ),
+                    border = CardDefaults.outlinedCardBorder().copy(
+                        brush = androidx.compose.ui.graphics.SolidColor(
+                            if (state.bleState == BleConnectionState.CONNECTED) GreenSafe else Maroon
+                        )
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 14.dp, vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Icon(
+                                imageVector = if (state.bleState == BleConnectionState.CONNECTED) Icons.Default.BluetoothConnected else Icons.Default.Bluetooth,
+                                contentDescription = null,
+                                tint = if (state.bleState == BleConnectionState.CONNECTED) GreenSafe else Maroon,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Column {
+                                Text(
+                                    text = if (state.bleState == BleConnectionState.CONNECTED)
+                                        strings.espConnected
+                                    else
+                                        strings.espDisconnected,
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (state.bleState == BleConnectionState.CONNECTED) GreenSafe else TextDark
+                                )
+                                Text(
+                                    text = if (state.bleState == BleConnectionState.CONNECTED)
+                                        strings.espReceivingLive
+                                    else
+                                        strings.espTapToConnect,
+                                    fontSize = 11.sp,
+                                    color = TextGray
+                                )
+                            }
+                        }
+
+                        Button(
+                            onClick = viewModel::openBleDialog,
+                            shape = RoundedCornerShape(10.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (state.bleState == BleConnectionState.CONNECTED) GreenSafe else Maroon
+                            ),
+                            modifier = Modifier.height(34.dp)
+                        ) {
+                            Text(
+                                text = if (state.bleState == BleConnectionState.CONNECTED) strings.btnManage else strings.btnConnect,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = White
+                            )
+                        }
+                    }
+                }
 
                 // Row 1: Heart Rate + Motion
                 Row(modifier = Modifier.fillMaxWidth()) {
                     MetricCard(
                         title = "Detak Jantung",
-                        value = "${state.healthMetrics.heartRate}",
+                        value = if (state.healthMetrics.heartRate > 0)
+                            "${state.healthMetrics.heartRate}"
+                        else if (state.bleState == BleConnectionState.CONNECTED)
+                            "--"
+                        else
+                            "0",
                         unit = "bpm",
                         status = state.healthMetrics.heartRateState,
                         icon = Icons.Default.Favorite,
@@ -303,9 +428,15 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.width(12.dp))
                     MetricCard(
                         title = "Sensor Gerak",
-                        value = "${state.healthMetrics.motionSpeed}",
-                        unit = state.healthMetrics.motionUnit,
-                        status = state.healthMetrics.motionState,
+                        value = if (state.bleState == BleConnectionState.CONNECTED)
+                            state.healthMetrics.motionState
+                        else
+                            "Diam",
+                        unit = "",
+                        status = if (state.bleState == BleConnectionState.CONNECTED)
+                            "AX: ${String.format("%.2f", state.healthMetrics.mpuData.ax)}g | AY: ${String.format("%.2f", state.healthMetrics.mpuData.ay)}g"
+                        else
+                            "Alat terputus",
                         icon = Icons.Default.DirectionsRun,
                         iconColor = Maroon,
                         iconBg = SoftPeach,
@@ -318,11 +449,17 @@ fun HomeScreen(
                 // Row 2: Battery + GPS
                 Row(modifier = Modifier.fillMaxWidth()) {
                     MetricCard(
-                        title = "Baterai Jam",
-                        value = "${state.healthMetrics.batteryPercent}%",
-                        unit = "",
-                        status = if (state.healthMetrics.isSmartwatchConnected) "Terhubung" else "Terputus",
-                        icon = Icons.Default.BatteryStd,
+                        title = "Status Daya Alat",
+                        value = if (state.bleState == BleConnectionState.CONNECTED)
+                            (if (state.healthMetrics.isUsbPowered) "USB" else "${state.healthMetrics.batteryPercent}%")
+                        else
+                            "Offline",
+                        unit = if (state.bleState == BleConnectionState.CONNECTED && state.healthMetrics.isUsbPowered) "⚡" else "",
+                        status = if (state.bleState == BleConnectionState.CONNECTED)
+                            (if (state.healthMetrics.isUsbPowered) "Daya USB Aktif" else "Baterai Normal")
+                        else
+                            "Alat belum tersambung",
+                        icon = if (state.healthMetrics.isUsbPowered) Icons.Default.Power else Icons.Default.BatteryStd,
                         iconColor = GreenSafe,
                         iconBg = SoftGreen,
                         modifier = Modifier.weight(1f)
@@ -338,6 +475,92 @@ fun HomeScreen(
                         iconBg = SoftPeach,
                         modifier = Modifier.weight(1f)
                     )
+                }
+
+                // Live MPU6050 6-Axis Telemetry Card (Visible when connected)
+                if (state.bleState == BleConnectionState.CONNECTED) {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = CardBg),
+                        border = CardDefaults.outlinedCardBorder().copy(
+                            brush = androidx.compose.ui.graphics.SolidColor(StrokeColor)
+                        )
+                    ) {
+                        Column(modifier = Modifier.padding(14.dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(
+                                        imageVector = Icons.Default.ShowChart,
+                                        contentDescription = null,
+                                        tint = Maroon,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        text = "Telemetri MPU6050 Real-time",
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = TextDark
+                                    )
+                                }
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .background(if (state.healthMetrics.mpuData.isMoving) SoftRed else SoftGreen)
+                                        .padding(horizontal = 8.dp, vertical = 2.dp)
+                                ) {
+                                    Text(
+                                        text = state.healthMetrics.mpuData.motionLabel.uppercase(),
+                                        fontSize = 10.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = if (state.healthMetrics.mpuData.isMoving) SosRed else GreenSafe
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = "Akselerasi (g):",
+                                        fontSize = 10.sp,
+                                        color = TextGray,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                    Text(
+                                        text = "X: ${String.format("%.2f", state.healthMetrics.mpuData.ax)}  Y: ${String.format("%.2f", state.healthMetrics.mpuData.ay)}  Z: ${String.format("%.2f", state.healthMetrics.mpuData.az)}",
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = TextDark
+                                    )
+                                }
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = "Gyroscope (°/s):",
+                                        fontSize = 10.sp,
+                                        color = TextGray,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                    Text(
+                                        text = "X: ${String.format("%.1f", state.healthMetrics.mpuData.gx)}  Y: ${String.format("%.1f", state.healthMetrics.mpuData.gy)}  Z: ${String.format("%.1f", state.healthMetrics.mpuData.gz)}",
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = TextDark
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(28.dp))
@@ -392,7 +615,7 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(10.dp))
 
                     Text(
-                        text = "Tekan tombol untuk kirim sinyal darurat",
+                        text = strings.sosHint,
                         color = TextGray,
                         fontSize = 12.sp
                     )
@@ -402,7 +625,7 @@ fun HomeScreen(
 
                 // QUICK ACTIONS
                 Text(
-                    text = "Aksi Cepat",
+                    text = strings.quickActions,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
                     color = TextDark,
@@ -415,24 +638,84 @@ fun HomeScreen(
                 ) {
                     QuickActionItem(
                         icon = Icons.Default.Phone,
-                        label = "Darurat 110",
+                        label = strings.actionCall110,
                         onClick = { onNavigate(Screen.Emergency) }
                     )
                     QuickActionItem(
                         icon = Icons.Default.LocationOn,
-                        label = "Peta Korban",
+                        label = strings.actionVictimMap,
                         onClick = { onNavigate(Screen.Map) }
                     )
                     QuickActionItem(
                         icon = Icons.Default.Share,
-                        label = "Bagikan",
+                        label = strings.actionShare,
                         onClick = { /* Share link */ }
                     )
                     QuickActionItem(
                         icon = Icons.Default.Shield,
-                        label = "Polisi",
+                        label = strings.actionPolice,
                         onClick = { onNavigate(Screen.PoliceDashboard) }
                     )
+                }
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                // SIMULASI NOTIFIKASI SOS WARGA (RADIUS 100-500m)
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp),
+                    colors = CardDefaults.cardColors(containerColor = SoftPeach),
+                    border = CardDefaults.outlinedCardBorder().copy(
+                        brush = androidx.compose.ui.graphics.SolidColor(StrokeColor)
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 14.dp, vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = strings.citizenSimTitle,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Maroon
+                            )
+                            Text(
+                                text = strings.citizenSimDesc,
+                                fontSize = 10.sp,
+                                color = TextGray
+                            )
+                        }
+
+                        Button(
+                            onClick = {
+                                val citizenAlert = SosAlertData(
+                                    id = "SOS-WARGA",
+                                    victimName = "Ahmad Pratama",
+                                    locationAddress = "Jl. Perintis Kemerdekaan KM 10",
+                                    distanceText = "250 m",
+                                    etaText = "3 mnt",
+                                    heartRate = 132
+                                )
+                                // 1. Munculkan pop-up dialog in-app
+                                activeIncomingSos = citizenAlert
+                                // 2. Picu Heads-up Notification sistem Android
+                                SosNotificationHelper.showEmergencyHeadsUpNotification(
+                                    context = context,
+                                    data = citizenAlert,
+                                    isPoliceRole = false
+                                )
+                            },
+                            shape = RoundedCornerShape(10.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = SosRed),
+                            modifier = Modifier.height(34.dp)
+                        ) {
+                            Text(strings.btnTestPopup, fontSize = 11.sp, fontWeight = FontWeight.Bold, color = White)
+                        }
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(20.dp))

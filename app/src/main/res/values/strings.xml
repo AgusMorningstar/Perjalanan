@@ -51,4 +51,35 @@
     <string name="police_number">110</string>
     <string name="call_police">Hubungi Polisi</string>
 
+    <!-- Onboarding -->
+    <string name="ob_logo_text">PERJALANAN</string>
+    <string name="ob_skip">Lewati</string>
+    <string name="ob_next">Lanjut</string>
+    <string name="ob_start">Mulai Sekarang</string>
+
+    <!-- Onboarding Page 1 -->
+    <string name="ob1_bubble">Hai! Aku Si Jaga, teman setiamu dalam setiap perjalanan. Ayo kenalan dulu!</string>
+    <string name="ob1_tag">SELAMAT DATANG</string>
+    <string name="ob1_title">Perjalanan Aman &amp; Terlindungi</string>
+    <string name="ob1_body">Aplikasi pendamping cerdas yang terhubung langsung dengan smartwatch SOS untuk menjaga keselamatanmu di mana pun kamu berada.</string>
+
+    <!-- Onboarding Page 2 -->
+    <string name="ob2_bubble">Detak jantung dan gerakan tubuhmu dipantau otomatis secara live oleh smartwatch lho!</string>
+    <string name="ob2_card1_title">Detak Jantung</string>
+    <string name="ob2_card1_desc">Pantau ritme &amp; anomali panik</string>
+    <string name="ob2_card2_title">Sensor Gerak</string>
+    <string name="ob2_card2_desc">Deteksi lari, jatuh &amp; benturan</string>
+    <string name="ob2_tag">SENSOR CERDAS</string>
+    <string name="ob2_title">Deteksi Dini Bahaya</string>
+    <string name="ob2_body">Sensor canggih membaca kondisi biologis dan gerak tubuhmu secara real-time untuk mendeteksi situasi genting.</string>
+
+    <!-- Onboarding Page 3 -->
+    <string name="ob3_bubble">Tekan tombol SOS kapan pun kamu butuh pertolongan darurat!</string>
+    <string name="ob3_f1">Lokasi GPS</string>
+    <string name="ob3_f2">Siaga Polisi</string>
+    <string name="ob3_f3">Sirine Darurat</string>
+    <string name="ob3_tag">RESPONS CEPAT</string>
+    <string name="ob3_title">Bantuan Satu Sentuhan</string>
+    <string name="ob3_body">Kirim sinyal darurat beserta titik koordinat GPS akurat langsung ke kantor polisi terdekat saat situasi kritis.</string>
+
 </resources>

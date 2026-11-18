@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.perjalanan.ui.localization.LocalAppStrings
 import com.example.perjalanan.ui.theme.CardBg
 import com.example.perjalanan.ui.theme.Maroon
 import com.example.perjalanan.ui.theme.SosRed
@@ -26,6 +27,7 @@ fun LogoutConfirmDialog(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
 ) {
+    val strings = LocalAppStrings.current
     AlertDialog(
         onDismissRequest = onDismiss,
         shape = RoundedCornerShape(20.dp),
@@ -39,7 +41,7 @@ fun LogoutConfirmDialog(
         },
         title = {
             Text(
-                text = "Keluar dari Akun?",
+                text = strings.logoutDialogTitle,
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
                 color = TextDark
@@ -47,7 +49,7 @@ fun LogoutConfirmDialog(
         },
         text = {
             Text(
-                text = "Apakah Anda yakin ingin keluar? Anda perlu login kembali untuk mengakses data darurat.",
+                text = strings.logoutDialogMessage,
                 fontSize = 14.sp,
                 color = TextGray
             )
@@ -58,7 +60,7 @@ fun LogoutConfirmDialog(
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = SosRed)
             ) {
-                Text(text = "Keluar", color = White, fontWeight = FontWeight.Bold)
+                Text(text = strings.btnLogout, color = White, fontWeight = FontWeight.Bold)
             }
         },
         dismissButton = {
@@ -67,7 +69,7 @@ fun LogoutConfirmDialog(
                 shape = RoundedCornerShape(12.dp),
                 border = ButtonDefaults.outlinedButtonBorder.copy(brush = androidx.compose.ui.graphics.SolidColor(StrokeColor))
             ) {
-                Text(text = "Batal", color = Maroon)
+                Text(text = strings.btnCancel, color = Maroon)
             }
         }
     )

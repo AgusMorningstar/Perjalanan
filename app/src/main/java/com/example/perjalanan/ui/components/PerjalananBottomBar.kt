@@ -14,29 +14,30 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.example.perjalanan.ui.localization.LocalAppStrings
 import com.example.perjalanan.ui.navigation.Screen
 import com.example.perjalanan.ui.theme.CardBg
 import com.example.perjalanan.ui.theme.Maroon
 import com.example.perjalanan.ui.theme.SoftPeach
 import com.example.perjalanan.ui.theme.TextGray
 
-sealed class NavItem(val screen: Screen, val title: String, val icon: ImageVector) {
-    object Home : NavItem(Screen.Home, "Beranda", Icons.Default.Home)
-    object Map : NavItem(Screen.Map, "Peta", Icons.Default.Place)
-    object Profile : NavItem(Screen.Profile, "Profil", Icons.Default.Person)
-    object Emergency : NavItem(Screen.Emergency, "Darurat", Icons.Default.Phone)
-}
+data class BottomNavItem(
+    val screen: Screen,
+    val title: String,
+    val icon: ImageVector
+)
 
 @Composable
 fun PerjalananBottomBar(
     currentRoute: String?,
     onNavigate: (Screen) -> Unit
 ) {
+    val strings = LocalAppStrings.current
     val items = listOf(
-        NavItem.Home,
-        NavItem.Map,
-        NavItem.Profile,
-        NavItem.Emergency
+        BottomNavItem(Screen.Home, strings.navHome, Icons.Default.Home),
+        BottomNavItem(Screen.Map, strings.navMap, Icons.Default.Place),
+        BottomNavItem(Screen.Profile, strings.navProfile, Icons.Default.Person),
+        BottomNavItem(Screen.Emergency, strings.navEmergency, Icons.Default.Phone)
     )
 
     NavigationBar(

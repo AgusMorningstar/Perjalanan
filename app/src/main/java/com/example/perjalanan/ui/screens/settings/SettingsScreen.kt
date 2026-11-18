@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Brightness4
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
@@ -36,6 +37,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.perjalanan.data.model.Language
 import com.example.perjalanan.data.model.ThemeMode
 import com.example.perjalanan.ui.components.PerjalananTopBar
+import com.example.perjalanan.ui.localization.LocalAppStrings
 import com.example.perjalanan.ui.theme.CardBg
 import com.example.perjalanan.ui.theme.Cream
 import com.example.perjalanan.ui.theme.Maroon
@@ -46,9 +48,11 @@ import com.example.perjalanan.ui.theme.TextGray
 @Composable
 fun SettingsScreen(
     onNavigateBack: () -> Unit,
+    onNavigateToOnboarding: () -> Unit = {},
     viewModel: SettingsViewModel = viewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
+    val strings = LocalAppStrings.current
 
     // THEME DIALOG
     if (state.isThemeDialogVisible) {
@@ -57,22 +61,22 @@ fun SettingsScreen(
             shape = RoundedCornerShape(20.dp),
             containerColor = CardBg,
             title = {
-                Text(text = "Mode Tampilan", fontWeight = FontWeight.Bold, color = Maroon)
+                Text(text = strings.selectThemeTitle, fontWeight = FontWeight.Bold, color = Maroon)
             },
             text = {
                 Column {
                     ThemeOptionRow(
-                        title = "Terang",
+                        title = strings.themeLight,
                         selected = state.settings.themeMode == ThemeMode.LIGHT,
                         onClick = { viewModel.selectTheme(ThemeMode.LIGHT) }
                     )
                     ThemeOptionRow(
-                        title = "Gelap",
+                        title = strings.themeDark,
                         selected = state.settings.themeMode == ThemeMode.DARK,
                         onClick = { viewModel.selectTheme(ThemeMode.DARK) }
                     )
                     ThemeOptionRow(
-                        title = "Ikuti Sistem",
+                        title = strings.themeSystem,
                         selected = state.settings.themeMode == ThemeMode.SYSTEM,
                         onClick = { viewModel.selectTheme(ThemeMode.SYSTEM) }
                     )
@@ -81,7 +85,7 @@ fun SettingsScreen(
             confirmButton = {},
             dismissButton = {
                 TextButton(onClick = viewModel::closeThemeDialog) {
-                    Text("Tutup", color = Maroon)
+                    Text(strings.close, color = Maroon)
                 }
             }
         )
@@ -94,17 +98,17 @@ fun SettingsScreen(
             shape = RoundedCornerShape(20.dp),
             containerColor = CardBg,
             title = {
-                Text(text = "Ubah Bahasa", fontWeight = FontWeight.Bold, color = Maroon)
+                Text(text = strings.changeLanguageTitle, fontWeight = FontWeight.Bold, color = Maroon)
             },
             text = {
                 Column {
                     ThemeOptionRow(
-                        title = "Indonesia",
+                        title = strings.langIndonesia,
                         selected = state.settings.language == Language.INDONESIA,
                         onClick = { viewModel.selectLanguage(Language.INDONESIA) }
                     )
                     ThemeOptionRow(
-                        title = "English",
+                        title = strings.langEnglish,
                         selected = state.settings.language == Language.ENGLISH,
                         onClick = { viewModel.selectLanguage(Language.ENGLISH) }
                     )
@@ -113,7 +117,7 @@ fun SettingsScreen(
             confirmButton = {},
             dismissButton = {
                 TextButton(onClick = viewModel::closeLanguageDialog) {
-                    Text("Tutup", color = Maroon)
+                    Text(strings.close, color = Maroon)
                 }
             }
         )
@@ -122,7 +126,7 @@ fun SettingsScreen(
     Scaffold(
         topBar = {
             PerjalananTopBar(
-                title = "Pengaturan",
+                title = strings.settingsTitle,
                 onBackClick = onNavigateBack
             )
         },
@@ -144,7 +148,7 @@ fun SettingsScreen(
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
-                        text = "Preferensi",
+                        text = strings.preferences,
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Bold,
                         color = Maroon,
@@ -154,11 +158,11 @@ fun SettingsScreen(
                     // Theme Row
                     SettingItemRow(
                         icon = Icons.Default.Brightness4,
-                        title = "Tema Aplikasi",
+                        title = strings.appTheme,
                         currentValue = when (state.settings.themeMode) {
-                            ThemeMode.LIGHT -> "Terang"
-                            ThemeMode.DARK -> "Gelap"
-                            ThemeMode.SYSTEM -> "Ikuti Sistem"
+                            ThemeMode.LIGHT -> strings.themeLight
+                            ThemeMode.DARK -> strings.themeDark
+                            ThemeMode.SYSTEM -> strings.themeSystem
                         },
                         onClick = viewModel::openThemeDialog
                     )
@@ -168,12 +172,22 @@ fun SettingsScreen(
                     // Language Row
                     SettingItemRow(
                         icon = Icons.Default.Language,
-                        title = "Bahasa",
+                        title = strings.language,
                         currentValue = when (state.settings.language) {
-                            Language.INDONESIA -> "Indonesia"
-                            Language.ENGLISH -> "English"
+                            Language.INDONESIA -> strings.langIndonesia
+                            Language.ENGLISH -> strings.langEnglish
                         },
                         onClick = viewModel::openLanguageDialog
+                    )
+
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = StrokeColor)
+
+                    // Onboarding Guide Row
+                    SettingItemRow(
+                        icon = Icons.Default.Info,
+                        title = strings.onboardingGuide,
+                        currentValue = strings.open,
+                        onClick = onNavigateToOnboarding
                     )
                 }
             }
@@ -181,13 +195,13 @@ fun SettingsScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "PERJALANAN v1.0.0 (Compose Edition)",
+                text = strings.appVersionInfo,
                 fontSize = 11.sp,
                 color = TextGray,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
             Text(
-                text = "Dilindungi dengan enkripsi sinyal darurat modern.",
+                text = strings.appSecurityNotice,
                 fontSize = 11.sp,
                 color = TextGray,
                 modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 2.dp)

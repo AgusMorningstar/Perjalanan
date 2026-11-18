@@ -25,6 +25,10 @@ class AuthActivity : ComponentActivity() {
                     },
                     onNavigateToForgotPassword = {
                         startActivity(Intent(this, VerifyCodeActivity::class.java))
+                    },
+                    onNavigateToRegister = {
+                        startActivity(Intent(this, MainActivity::class.java))
+                        finish()
                     }
                 )
             }

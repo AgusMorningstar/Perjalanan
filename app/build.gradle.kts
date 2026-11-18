@@ -40,6 +40,9 @@ android {
 }
 
 dependencies {
+    // Lottie Animation (Core Android View untuk kompatibilitas penuh Jetpack Compose)
+    implementation("com.airbnb.android:lottie:6.6.7")
+
     // Material & AppCompat (dipertahankan untuk themes.xml)
     implementation("com.google.android.material:material:1.12.0")
     implementation("androidx.appcompat:appcompat:1.7.0")

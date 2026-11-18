@@ -73,6 +73,30 @@ class LoginViewModel(
         }
     }
 
+    fun loginWithGoogle() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+            val result = authRepository.loginWithGoogle()
+            result.onSuccess { user ->
+                val isPolice = user.role.equals("Polisi", ignoreCase = true)
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        isSuccess = true,
+                        isPolice = isPolice
+                    )
+                }
+            }.onFailure { err ->
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = err.message ?: "Gagal masuk dengan Google"
+                    )
+                }
+            }
+        }
+    }
+
     fun resetState() {
         _uiState.update { it.copy(isSuccess = false, errorMessage = null) }
     }

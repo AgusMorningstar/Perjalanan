@@ -9,6 +9,8 @@ import kotlinx.coroutines.flow.asStateFlow
 interface AuthRepository {
     val currentUser: Flow<User?>
     suspend fun login(email: String, password: String): Result<User>
+    suspend fun register(username: String, email: String, password: String): Result<User>
+    suspend fun loginWithGoogle(): Result<User>
     suspend fun verifyCode(code: String): Result<Boolean>
     suspend fun changePassword(newPass: String): Result<Boolean>
     suspend fun logout()
@@ -29,6 +31,35 @@ class AuthRepositoryImpl : AuthRepository {
             email = email,
             phone = "081234567890",
             role = if (email.contains("polisi", ignoreCase = true)) "Polisi" else "Pengguna"
+        )
+        _currentUser.value = user
+        return Result.success(user)
+    }
+
+    override suspend fun register(username: String, email: String, password: String): Result<User> {
+        delay(600)
+        if (username.isBlank() || email.isBlank() || password.isBlank()) {
+            return Result.failure(IllegalArgumentException("Semua data pendaftaran wajib diisi"))
+        }
+        val user = User(
+            id = "user_${System.currentTimeMillis()}",
+            name = username,
+            email = email,
+            phone = "081234567890",
+            role = "Pengguna"
+        )
+        _currentUser.value = user
+        return Result.success(user)
+    }
+
+    override suspend fun loginWithGoogle(): Result<User> {
+        delay(600)
+        val user = User(
+            id = "google_user_01",
+            name = "Salsabilaa (Google)",
+            email = "salsabilaa.google@gmail.com",
+            phone = "081234567890",
+            role = "Pengguna"
         )
         _currentUser.value = user
         return Result.success(user)

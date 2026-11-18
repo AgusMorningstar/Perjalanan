@@ -7,11 +7,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.perjalanan.ui.screens.auth.ChangePasswordScreen
 import com.example.perjalanan.ui.screens.auth.LoginScreen
+import com.example.perjalanan.ui.screens.auth.RegisterScreen
 import com.example.perjalanan.ui.screens.auth.VerifyCodeScreen
 import com.example.perjalanan.ui.screens.emergency.EmergencyScreen
 import com.example.perjalanan.ui.screens.home.HomeScreen
 import com.example.perjalanan.ui.screens.map.MapScreen
+import com.example.perjalanan.ui.screens.onboarding.OnboardingScreen
 import com.example.perjalanan.ui.screens.police.PoliceDashboardScreen
+import com.example.perjalanan.ui.screens.police.PoliceMapScreen
 import com.example.perjalanan.ui.screens.police.PoliceProfileScreen
 import com.example.perjalanan.ui.screens.profile.ProfileScreen
 import com.example.perjalanan.ui.screens.settings.SettingsScreen
@@ -19,12 +22,23 @@ import com.example.perjalanan.ui.screens.settings.SettingsScreen
 @Composable
 fun AppNavGraph(
     navController: NavHostController = rememberNavController(),
-    startDestination: String = Screen.Login.route
+    startDestination: String = Screen.Onboarding.route
 ) {
     NavHost(
         navController = navController,
         startDestination = startDestination
     ) {
+        // ONBOARDING
+        composable(Screen.Onboarding.route) {
+            OnboardingScreen(
+                onFinishOnboarding = {
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.Onboarding.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+
         // LOGIN
         composable(Screen.Login.route) {
             LoginScreen(
@@ -40,6 +54,23 @@ fun AppNavGraph(
                 },
                 onNavigateToForgotPassword = {
                     navController.navigate(Screen.VerifyCode.route)
+                },
+                onNavigateToRegister = {
+                    navController.navigate(Screen.Register.route)
+                }
+            )
+        }
+
+        // REGISTER
+        composable(Screen.Register.route) {
+            RegisterScreen(
+                onNavigateToLogin = {
+                    navController.popBackStack()
+                },
+                onRegisterSuccess = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Login.route) { inclusive = true }
+                    }
                 }
             )
         }
@@ -101,6 +132,9 @@ fun AppNavGraph(
             SettingsScreen(
                 onNavigateBack = {
                     navController.popBackStack()
+                },
+                onNavigateToOnboarding = {
+                    navController.navigate(Screen.Onboarding.route)
                 }
             )
         }
@@ -110,6 +144,31 @@ fun AppNavGraph(
             PoliceDashboardScreen(
                 onNavigateToPoliceProfile = {
                     navController.navigate(Screen.PoliceProfile.route)
+                },
+                onNavigateToMap = {
+                    navController.navigate(Screen.PoliceMap.route) {
+                        launchSingleTop = true
+                    }
+                },
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        // POLICE MAP
+        composable(Screen.PoliceMap.route) {
+            PoliceMapScreen(
+                onNavigateToDashboard = {
+                    navController.navigate(Screen.PoliceDashboard.route) {
+                        launchSingleTop = true
+                        popUpTo(Screen.PoliceDashboard.route) { inclusive = false }
+                    }
+                },
+                onNavigateToPoliceProfile = {
+                    navController.navigate(Screen.PoliceProfile.route) {
+                        launchSingleTop = true
+                    }
                 },
                 onNavigateBack = {
                     navController.popBackStack()
@@ -122,6 +181,17 @@ fun AppNavGraph(
             PoliceProfileScreen(
                 onNavigateBack = {
                     navController.popBackStack()
+                },
+                onNavigateToDashboard = {
+                    navController.navigate(Screen.PoliceDashboard.route) {
+                        launchSingleTop = true
+                        popUpTo(Screen.PoliceDashboard.route) { inclusive = false }
+                    }
+                },
+                onNavigateToMap = {
+                    navController.navigate(Screen.PoliceMap.route) {
+                        launchSingleTop = true
+                    }
                 },
                 onNavigateToSettings = {
                     navController.navigate(Screen.Settings.route)

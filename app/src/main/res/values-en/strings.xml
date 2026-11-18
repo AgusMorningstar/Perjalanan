@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- App -->
+    <string name="app_name">Perjalanan</string>
+    <string name="tagline">Small steps toward a great destination</string>
+
+    <!-- Login & Register -->
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="username">Username</string>
+    <string name="phone">Phone Number</string>
+    <string name="full_name">Full Name</string>
+    <string name="sign_in">SIGN IN</string>
+    <string name="sign_up">SIGN UP</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="forgot_title">Forgot Password?</string>
+    <string name="forgot_description">Enter your registered email, we will send a link to reset your password.</string>
+    <string name="send_link">SEND LINK</string>
+    <string name="back_to_login">Back to login</string>
+    <string name="skip">Skip ›</string>
+    <string name="or_divider">or</string>
+    <string name="sign_in_google">Sign in with Google</string>
+    <string name="sign_up_google">Sign up with Google</string>
+    <string name="no_account">Don\'t have an account? </string>
+    <string name="have_account">Already have an account? </string>
+    <string name="register_here">Register</string>
+    <string name="login_here">Login</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_location">Map</string>
+    <string name="nav_profile">Profile</string>
+    <string name="nav_emergency">Emergency</string>
+    <string name="nav_dashboard">Dashboard</string>
+
+    <!-- Dashboard & Health -->
+    <string name="dashboard_title">Dashboard</string>
+    <string name="heart_rate">Heart Rate</string>
+    <string name="motion_sensor">Motion Sensor</string>
+    <string name="watch_status">SOS Smartwatch Status</string>
+    <string name="device_connected">Connected</string>
+    <string name="device_disconnected">Disconnected</string>
+    <string name="live_bpm_motion">Receiving real-time BPM &amp; Motion data</string>
+    <string name="tap_to_connect">Tap to connect device</string>
+    <string name="manage">Manage</string>
+    <string name="connect">Connect</string>
+
+    <!-- SOS Button & Quick Actions -->
+    <string name="sos_card_title">SOS Emergency Button</string>
+    <string name="sos_card_sub">Hold for 3 seconds in dangerous situations</string>
+    <string name="sos_hint">Tap the button to send emergency signal</string>
+    <string name="quick_actions">Quick Actions</string>
+    <string name="action_call_110">Emergency 110</string>
+    <string name="action_victim_map">Victim Map</string>
+    <string name="action_share">Share</string>
+    <string name="action_police">Police</string>
+
+    <!-- Location & Map -->
+    <string name="location_title">Victim Location</string>
+    <string name="start_navigation">Start Navigation</string>
+    <string name="waiting_location">Waiting for victim location...</string>
+    <string name="radius_zone">Zone Radius: ±150 meters</string>
+    <string name="status_critical">Critical</string>
+    <string name="monitoring_map_title">EMERGENCY MONITORING MAP</string>
+
+    <!-- Profile -->
+    <string name="profile_title">User Profile</string>
+    <string name="police_profile_title">Officer Profile</string>
+    <string name="role">Role</string>
+    <string name="settings">Settings</string>
+    <string name="logout">Logout</string>
+    <string name="account_info">Account Information</string>
+    <string name="duty_info">Duty Information</string>
+    <string name="identity_number">Identity Number</string>
+    <string name="duty_unit">Assigned Unit</string>
+    <string name="headquarters">Headquarters</string>
+    <string name="app_settings">App Settings</string>
+    <string name="app_settings_sub">Theme, language, and preferences</string>
+    <string name="change_password">Change Password</string>
+    <string name="logout_confirm">Logout Confirmation</string>
+    <string name="logout_message">Are you sure you want to log out of your session?</string>
+
+    <!-- Police Dashboard -->
+    <string name="police_dashboard_title">Police Dashboard</string>
+    <string name="active_reports">Active</string>
+    <string name="resolved_reports">Resolved</string>
+    <string name="standby_units">Standby Units</string>
+    <string name="sos_siren_alarm">SOS Siren Alarm</string>
+    <string name="alarm_active_desc">Device is ACTIVELY sounding</string>
+    <string name="alarm_inactive_desc">Alarm is INACTIVE</string>
+    <string name="stop_alarm_now">Stop Alarm Now</string>
+    <string name="incoming_sos_reports">Incoming Emergency SOS Reports</string>
+    <string name="accept_handle_report">Accept &amp; Handle Report</string>
+    <string name="report_handled">✓ Report Under Handling</string>
+
+    <!-- Settings Screen -->
+    <string name="preferences">Preferences</string>
+    <string name="app_theme">App Theme</string>
+    <string name="language">Language</string>
+    <string name="onboarding_guide">App Guide (Onboarding)</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="theme_system">System Default</string>
+    <string name="close">Close</string>
+
+    <!-- Emergency Pop-up Dialog -->
+    <string name="sos_dialog_tag">SOS SIGNAL - HIGH PRIORITY</string>
+    <string name="sos_dialog_title">New Emergency Report</string>
+    <string name="distance">Distance</string>
+    <string name="eta">ETA</string>
+    <string name="heartbeat">Heartbeat</string>
+    <string name="accept_and_view_location">Accept &amp; View Location</string>
+    <string name="mute_alarm">Mute Alarm</string>
+    <string name="later">Later</string>
+
+    <!-- Emergency Numbers -->
+    <string name="emergency_title">Emergency Numbers</string>
+    <string name="police_number">110</string>
+    <string name="call_police">Call Police</string>
+
+    <!-- Onboarding -->
+    <string name="ob_logo_text">PERJALANAN</string>
+    <string name="ob_skip">Skip</string>
+    <string name="ob_next">Next</string>
+    <string name="ob_start">Get Started</string>
+
+    <!-- Onboarding Page 1 -->
+    <string name="ob1_bubble">Hi! I\'m Si Jaga, your loyal companion on every journey. Let\'s get to know each other!</string>
+    <string name="ob1_tag">WELCOME</string>
+    <string name="ob1_title">Safe &amp; Protected Journey</string>
+    <string name="ob1_body">A smart companion app connected directly to your SOS smartwatch to keep you safe wherever you go.</string>
+
+    <!-- Onboarding Page 2 -->
+    <string name="ob2_bubble">Your heart rate and body motion are automatically monitored live by your smartwatch!</string>
+    <string name="ob2_card1_title">Heart Rate</string>
+    <string name="ob2_card1_desc">Monitor rhythm &amp; panic spikes</string>
+    <string name="ob2_card2_title">Motion Sensor</string>
+    <string name="ob2_card2_desc">Detect running, falls &amp; impacts</string>
+    <string name="ob2_tag">SMART SENSORS</string>
+    <string name="ob2_title">Early Danger Detection</string>
+    <string name="ob2_body">Advanced sensors read your biological and physical motion data in real-time to detect emergency situations.</string>
+
+    <!-- Onboarding Page 3 -->
+    <string name="ob3_bubble">Press the SOS button anytime you need emergency assistance!</string>
+    <string name="ob3_f1">GPS Location</string>
+    <string name="ob3_f2">Police Alert</string>
+    <string name="ob3_f3">Emergency Siren</string>
+    <string name="ob3_tag">QUICK RESPONSE</string>
+    <string name="ob3_title">One-Touch Help</string>
+    <string name="ob3_body">Send emergency signals with accurate GPS coordinates directly to nearby police stations during critical situations.</string>
+
+</resources>

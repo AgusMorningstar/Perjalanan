@@ -5,6 +5,10 @@
     <!-- Internet untuk peta -->
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!-- Notifikasi & Getaran untuk Sinyal Darurat SOS -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+
     <!-- Lokasi pengguna -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />

@@ -48,6 +48,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.perjalanan.ui.components.LogoutConfirmDialog
 import com.example.perjalanan.ui.components.PerjalananBottomBar
 import com.example.perjalanan.ui.components.PerjalananTopBar
+import com.example.perjalanan.ui.localization.LocalAppStrings
 import com.example.perjalanan.ui.navigation.Screen
 import com.example.perjalanan.ui.theme.CardBg
 import com.example.perjalanan.ui.theme.Cream
@@ -68,6 +69,7 @@ fun ProfileScreen(
     viewModel: ProfileViewModel = viewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
+    val strings = LocalAppStrings.current
 
     LaunchedEffect(state.isLoggedOut) {
         if (state.isLoggedOut) {
@@ -84,7 +86,7 @@ fun ProfileScreen(
 
     Scaffold(
         topBar = {
-            PerjalananTopBar(title = "Profil Pengguna")
+            PerjalananTopBar(title = strings.userProfileTitle)
         },
         bottomBar = {
             PerjalananBottomBar(
@@ -158,7 +160,7 @@ fun ProfileScreen(
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
-                        text = "Informasi Akun",
+                        text = strings.accountInfo,
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Bold,
                         color = Maroon,
@@ -167,11 +169,11 @@ fun ProfileScreen(
 
                     ProfileDetailRow(icon = Icons.Default.Email, label = "Email", value = state.user.email)
                     HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp), color = StrokeColor)
-                    ProfileDetailRow(icon = Icons.Default.Phone, label = "Nomor Telepon", value = state.user.phone)
+                    ProfileDetailRow(icon = Icons.Default.Phone, label = "Telepon", value = state.user.phone)
                     HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp), color = StrokeColor)
-                    ProfileDetailRow(icon = Icons.Default.Lock, label = "Kata Sandi", value = "••••••••")
+                    ProfileDetailRow(icon = Icons.Default.Lock, label = "Password", value = "••••••••")
                     HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp), color = StrokeColor)
-                    ProfileDetailRow(icon = Icons.Default.Security, label = "Peran Akun", value = state.user.role)
+                    ProfileDetailRow(icon = Icons.Default.Security, label = "Role", value = state.user.role)
                 }
             }
 
@@ -191,8 +193,8 @@ fun ProfileScreen(
                         icon = Icons.Default.Settings,
                         iconBg = SoftPeach,
                         iconTint = Maroon,
-                        title = "Pengaturan Aplikasi",
-                        subtitle = "Tema, bahasa, dan preferensi",
+                        title = strings.appSettingsMenu,
+                        subtitle = strings.appSettingsSub,
                         onClick = { onNavigate(Screen.Settings) }
                     )
 
@@ -202,8 +204,8 @@ fun ProfileScreen(
                         icon = Icons.Default.ExitToApp,
                         iconBg = SoftRed,
                         iconTint = SosRed,
-                        title = "Keluar Akun",
-                        subtitle = "Logout dari sesi perangkat ini",
+                        title = strings.logoutMenu,
+                        subtitle = strings.logoutSub,
                         onClick = viewModel::openLogoutDialog
                     )
                 }

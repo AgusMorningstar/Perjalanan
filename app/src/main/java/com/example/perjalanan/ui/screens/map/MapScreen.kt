@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.perjalanan.ui.components.PerjalananBottomBar
+import com.example.perjalanan.ui.localization.LocalAppStrings
 import com.example.perjalanan.ui.navigation.Screen
 import com.example.perjalanan.ui.theme.CardBg
 import com.example.perjalanan.ui.theme.Cream
@@ -65,6 +66,7 @@ fun MapScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
+    val strings = LocalAppStrings.current
 
     Scaffold(
         bottomBar = {
@@ -118,7 +120,7 @@ fun MapScreen(
 
                 // Grid lines decoration for map look
                 Text(
-                    text = "PETA MONITORING DARURAT",
+                    text = strings.monitoringMapTitle,
                     color = Color(0xFF90A4AE),
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
@@ -146,7 +148,7 @@ fun MapScreen(
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Kembali",
+                        contentDescription = strings.back,
                         tint = Maroon
                     )
                 }
@@ -159,7 +161,7 @@ fun MapScreen(
                     )
                 ) {
                     Text(
-                        text = "Lokasi Korban",
+                        text = strings.victimLocation,
                         fontWeight = FontWeight.Bold,
                         fontSize = 14.sp,
                         color = Maroon,
@@ -169,7 +171,7 @@ fun MapScreen(
 
                 IconButton(
                     onClick = {
-                        Toast.makeText(context, "Memusatkan ke lokasi korban...", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, strings.centeringLocation, Toast.LENGTH_SHORT).show()
                     },
                     modifier = Modifier
                         .clip(CircleShape)
@@ -224,7 +226,7 @@ fun MapScreen(
                                     color = TextDark
                                 )
                                 Text(
-                                    text = "Radius Zona: ±150 meter",
+                                    text = strings.zoneRadiusDesc,
                                     fontSize = 11.sp,
                                     color = TextGray
                                 )
@@ -238,7 +240,7 @@ fun MapScreen(
                                 .padding(horizontal = 10.dp, vertical = 4.dp)
                         ) {
                             Text(
-                                text = "Kritis",
+                                text = strings.critical,
                                 color = SosRed,
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold
@@ -272,7 +274,7 @@ fun MapScreen(
                             try {
                                 context.startActivity(intent)
                             } catch (e: Exception) {
-                                Toast.makeText(context, "Membuka browser peta...", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, strings.openingBrowserMap, Toast.LENGTH_SHORT).show()
                                 val webIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://maps.google.com/?q=${state.victimLat},${state.victimLng}"))
                                 context.startActivity(webIntent)
                             }
@@ -291,7 +293,7 @@ fun MapScreen(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "Mulai Navigasi",
+                            text = strings.btnStartNavigation,
                             fontWeight = FontWeight.Bold,
                             fontSize = 15.sp,
                             color = White

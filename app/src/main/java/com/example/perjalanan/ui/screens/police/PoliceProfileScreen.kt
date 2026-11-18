@@ -54,6 +54,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.perjalanan.ui.components.LogoutConfirmDialog
 import com.example.perjalanan.ui.components.PerjalananTopBar
+import com.example.perjalanan.ui.components.PoliceBottomBar
+import com.example.perjalanan.ui.localization.LocalAppStrings
+import com.example.perjalanan.ui.navigation.Screen
 import com.example.perjalanan.ui.screens.profile.ProfileDetailRow
 import com.example.perjalanan.ui.screens.profile.ProfileMenuRow
 import com.example.perjalanan.ui.theme.CardBg
@@ -76,10 +79,13 @@ fun PoliceProfileScreen(
     onNavigateToSettings: () -> Unit,
     onNavigateToChangePassword: () -> Unit,
     onLogoutSuccess: () -> Unit,
+    onNavigateToDashboard: () -> Unit = {},
+    onNavigateToMap: () -> Unit = {},
     viewModel: PoliceProfileViewModel = viewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+    val strings = LocalAppStrings.current
 
     LaunchedEffect(state.toastMessage) {
         state.toastMessage?.let { msg ->
@@ -158,15 +164,27 @@ fun PoliceProfileScreen(
     Scaffold(
         topBar = {
             PerjalananTopBar(
-                title = "Profil Petugas",
+                title = strings.policeProfileTitle,
                 onBackClick = onNavigateBack,
                 actions = {
                     IconButton(onClick = onNavigateToSettings) {
                         Icon(
                             imageVector = Icons.Default.Settings,
-                            contentDescription = "Pengaturan",
+                            contentDescription = strings.settingsTitle,
                             tint = White
                         )
+                    }
+                }
+            )
+        },
+        bottomBar = {
+            PoliceBottomBar(
+                currentRoute = Screen.PoliceProfile.route,
+                onNavigate = { screen ->
+                    when (screen) {
+                        Screen.PoliceDashboard -> onNavigateToDashboard()
+                        Screen.PoliceMap -> onNavigateToMap()
+                        else -> {}
                     }
                 }
             )
@@ -263,22 +281,22 @@ fun PoliceProfileScreen(
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
-                        text = "Informasi Kedinasan",
+                        text = strings.dutyInfo,
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Bold,
                         color = Maroon,
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
 
-                    ProfileDetailRow(icon = Icons.Default.Badge, label = "Nomor Identitas", value = state.officer.id)
+                    ProfileDetailRow(icon = Icons.Default.Badge, label = strings.idNumber, value = state.officer.id)
                     HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp), color = StrokeColor)
-                    ProfileDetailRow(icon = Icons.Default.Email, label = "Email Dinas", value = state.officer.email)
+                    ProfileDetailRow(icon = Icons.Default.Email, label = "Email", value = state.officer.email)
                     HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp), color = StrokeColor)
-                    ProfileDetailRow(icon = Icons.Default.Phone, label = "Telepon Darurat", value = state.officer.phone)
+                    ProfileDetailRow(icon = Icons.Default.Phone, label = "Telepon", value = state.officer.phone)
                     HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp), color = StrokeColor)
-                    ProfileDetailRow(icon = Icons.Default.Security, label = "Unit Penugasan", value = state.officer.unit)
+                    ProfileDetailRow(icon = Icons.Default.Security, label = strings.dutyUnit, value = state.officer.unit)
                     HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp), color = StrokeColor)
-                    ProfileDetailRow(icon = Icons.Default.Business, label = "Kantor Induk", value = state.officer.office)
+                    ProfileDetailRow(icon = Icons.Default.Business, label = strings.headquarters, value = state.officer.office)
                 }
             }
 
@@ -298,9 +316,20 @@ fun PoliceProfileScreen(
                         icon = Icons.Default.Notifications,
                         iconBg = SoftRed,
                         iconTint = SosRed,
-                        title = "Pengaturan Alarm SOS",
-                        subtitle = "Status: ${if (state.officer.isAlarmActive) "AKTIF" else "NONAKTIF"}",
+                        title = strings.sosSirenAlarm,
+                        subtitle = "Status: ${if (state.officer.isAlarmActive) strings.statusOnline else strings.statusOffline}",
                         onClick = viewModel::openAlarmSettings
+                    )
+
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp), color = StrokeColor)
+
+                    ProfileMenuRow(
+                        icon = Icons.Default.Settings,
+                        iconBg = SoftPeach,
+                        iconTint = Maroon,
+                        title = strings.appSettingsMenu,
+                        subtitle = strings.appSettingsSub,
+                        onClick = onNavigateToSettings
                     )
 
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp), color = StrokeColor)
@@ -309,8 +338,8 @@ fun PoliceProfileScreen(
                         icon = Icons.Default.LockReset,
                         iconBg = SoftPeach,
                         iconTint = Maroon,
-                        title = "Ubah Kata Sandi",
-                        subtitle = "Perbarui kunci akses kedinasan",
+                        title = strings.changePasswordMenu,
+                        subtitle = strings.changePasswordSub,
                         onClick = onNavigateToChangePassword
                     )
 
@@ -320,8 +349,8 @@ fun PoliceProfileScreen(
                         icon = Icons.Default.ExitToApp,
                         iconBg = SoftRed,
                         iconTint = SosRed,
-                        title = "Keluar Akun Polisi",
-                        subtitle = "Logout dari sesi petugas",
+                        title = strings.logoutMenu,
+                        subtitle = strings.logoutSub,
                         onClick = viewModel::openLogoutDialog
                     )
                 }
