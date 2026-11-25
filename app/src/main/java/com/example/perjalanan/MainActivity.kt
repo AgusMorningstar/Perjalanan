@@ -1,6 +1,5 @@
 package com.example.perjalanan
 
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -12,13 +11,13 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import com.example.perjalanan.data.AppContainer
 import com.example.perjalanan.data.model.Language
 import com.example.perjalanan.data.model.ThemeMode
@@ -27,6 +26,9 @@ import com.example.perjalanan.ui.localization.LocalAppStrings
 import com.example.perjalanan.ui.localization.getAppStrings
 import com.example.perjalanan.ui.navigation.AppNavGraph
 import com.example.perjalanan.ui.navigation.Screen
+import com.example.perjalanan.ui.theme.DarkAppColors
+import com.example.perjalanan.ui.theme.LightAppColors
+import com.example.perjalanan.ui.theme.LocalAppColors
 import com.example.perjalanan.ui.theme.PerjalananTheme
 import java.util.Locale
 
@@ -60,21 +62,40 @@ class MainActivity : ComponentActivity() {
                 ThemeMode.SYSTEM -> systemDark
             }
 
-            // Update Android Locale Configuration
-            val currentContext = LocalContext.current
+            // Update Android Locale Configuration safely in LaunchedEffect
             val appStrings = getAppStrings(settingsState.language)
-            val locale = if (settingsState.language == Language.ENGLISH) Locale.ENGLISH else Locale("in", "ID")
-            Locale.setDefault(locale)
-            val config = currentContext.resources.configuration
-            config.setLocale(locale)
-            currentContext.resources.updateConfiguration(config, currentContext.resources.displayMetrics)
+            LaunchedEffect(settingsState.language) {
+                val locale = if (settingsState.language == Language.ENGLISH) Locale.ENGLISH else Locale("in", "ID")
+                Locale.setDefault(locale)
+                @Suppress("DEPRECATION")
+                val config = this@MainActivity.resources.configuration
+                config.setLocale(locale)
+                @Suppress("DEPRECATION")
+                this@MainActivity.resources.updateConfiguration(config, this@MainActivity.resources.displayMetrics)
+            }
+
+            // Tentukan layar awal secara dinamis: jika sudah login langsung ke Home/PoliceDashboard
+            val authRepo = AppContainer.authRepository
+            val defaultStartRoute = if (authRepo.isLoggedIn()) {
+                val user = authRepo.getSavedUser()
+                if (user?.isPolice == true) Screen.PoliceDashboard.route else Screen.Home.route
+            } else {
+                Screen.Onboarding.route
+            }
 
             PerjalananTheme(darkTheme = isDarkTheme) {
-                CompositionLocalProvider(LocalAppStrings provides appStrings) {
-                    key(settingsState.language) {
-                        Surface(modifier = Modifier.fillMaxSize()) {
+                val appColors = if (isDarkTheme) DarkAppColors else LightAppColors
+                CompositionLocalProvider(
+                    LocalAppStrings provides appStrings,
+                    LocalAppColors provides appColors
+                ) {
+                    key(settingsState.language, isDarkTheme) {
+                        Surface(
+                            modifier = Modifier.fillMaxSize(),
+                            color = appColors.screenBackground
+                        ) {
                             AppNavGraph(
-                                startDestination = initialDestination ?: Screen.Onboarding.route
+                                startDestination = initialDestination ?: defaultStartRoute
                             )
                         }
                     }

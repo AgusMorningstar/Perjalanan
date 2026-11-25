@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Lock
@@ -27,16 +28,21 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,10 +51,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.perjalanan.ui.components.ChangePasswordProfileDialog
+import com.example.perjalanan.ui.components.EditProfileFieldDialog
+import com.example.perjalanan.ui.components.EditableFieldType
 import com.example.perjalanan.ui.components.LogoutConfirmDialog
 import com.example.perjalanan.ui.components.PerjalananBottomBar
 import com.example.perjalanan.ui.components.PerjalananTopBar
 import com.example.perjalanan.ui.localization.LocalAppStrings
+import com.example.perjalanan.ui.theme.LocalAppColors
 import com.example.perjalanan.ui.navigation.Screen
 import com.example.perjalanan.ui.theme.CardBg
 import com.example.perjalanan.ui.theme.Cream
@@ -70,11 +80,47 @@ fun ProfileScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
     val strings = LocalAppStrings.current
+    val colors = LocalAppColors.current
+    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(state.isLoggedOut) {
         if (state.isLoggedOut) {
             onLogoutSuccess()
         }
+    }
+
+    LaunchedEffect(state.snackbarMessage) {
+        state.snackbarMessage?.let { msg ->
+            snackbarHostState.showSnackbar(msg)
+            viewModel.clearSnackbar()
+        }
+    }
+
+    // Dialog Edit Field (Nama, Email, Telepon)
+    state.editingField?.let { fieldType ->
+        val initialVal = when (fieldType) {
+            EditableFieldType.NAME -> state.user.name
+            EditableFieldType.EMAIL -> state.user.email
+            EditableFieldType.PHONE -> state.user.phone
+        }
+        EditProfileFieldDialog(
+            fieldType = fieldType,
+            initialValue = initialVal,
+            isLoading = state.isDialogLoading,
+            errorMessage = state.dialogErrorMessage,
+            onDismiss = viewModel::closeEditFieldDialog,
+            onConfirm = viewModel::submitFieldUpdate
+        )
+    }
+
+    // Dialog Ubah Password
+    if (state.isChangePasswordDialogOpen) {
+        ChangePasswordProfileDialog(
+            isLoading = state.isDialogLoading,
+            errorMessage = state.dialogErrorMessage,
+            onDismiss = viewModel::closeChangePasswordDialog,
+            onConfirm = viewModel::submitPasswordChange
+        )
     }
 
     if (state.isLogoutDialogOpen) {
@@ -94,6 +140,7 @@ fun ProfileScreen(
                 onNavigate = onNavigate
             )
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         containerColor = Cream
     ) { innerPadding ->
         Column(
@@ -126,7 +173,7 @@ fun ProfileScreen(
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text = state.user.name,
+                text = state.user.name.ifBlank { strings.defaultUserName },
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = Maroon
@@ -140,7 +187,7 @@ fun ProfileScreen(
                     .padding(horizontal = 12.dp, vertical = 4.dp)
             ) {
                 Text(
-                    text = state.user.role.uppercase(),
+                    text = if (state.user.isPolice) strings.rolePoliceText else strings.roleUserText,
                     color = TextDark,
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold
@@ -149,7 +196,7 @@ fun ProfileScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // PROFILE DETAILS CARD
+            // PROFILE DETAILS CARD DENGAN IKON PENSIL
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
@@ -167,13 +214,49 @@ fun ProfileScreen(
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
 
-                    ProfileDetailRow(icon = Icons.Default.Email, label = "Email", value = state.user.email)
+                    // 1. Nama Lengkap (Bisa diedit via pensil)
+                    ProfileDetailRow(
+                        icon = Icons.Default.Person,
+                        label = strings.fullName,
+                        value = state.user.name.ifBlank { "-" },
+                        onEditClick = { viewModel.openEditFieldDialog(EditableFieldType.NAME) }
+                    )
                     HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp), color = StrokeColor)
-                    ProfileDetailRow(icon = Icons.Default.Phone, label = "Telepon", value = state.user.phone)
+
+                    // 2. Email (Bisa diedit via pensil)
+                    ProfileDetailRow(
+                        icon = Icons.Default.Email,
+                        label = strings.emailLabel,
+                        value = state.user.email.ifBlank { "-" },
+                        onEditClick = { viewModel.openEditFieldDialog(EditableFieldType.EMAIL) }
+                    )
                     HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp), color = StrokeColor)
-                    ProfileDetailRow(icon = Icons.Default.Lock, label = "Password", value = "••••••••")
+
+                    // 3. Telepon (Bisa diedit via pensil)
+                    ProfileDetailRow(
+                        icon = Icons.Default.Phone,
+                        label = strings.phoneLabel,
+                        value = state.user.phone.ifBlank { strings.notSet },
+                        onEditClick = { viewModel.openEditFieldDialog(EditableFieldType.PHONE) }
+                    )
                     HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp), color = StrokeColor)
-                    ProfileDetailRow(icon = Icons.Default.Security, label = "Role", value = state.user.role)
+
+                    // 4. Password (Bisa diedit via pensil, butuh password lama)
+                    ProfileDetailRow(
+                        icon = Icons.Default.Lock,
+                        label = strings.passwordLabel,
+                        value = "••••••••",
+                        onEditClick = { viewModel.openChangePasswordDialog() }
+                    )
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp), color = StrokeColor)
+
+                    // 5. Role (TIDAK ADA PENSIL - hanya bisa diubah via kode undangan admin)
+                    ProfileDetailRow(
+                        icon = Icons.Default.Security,
+                        label = strings.roleLabel,
+                        value = if (state.user.isPolice) strings.rolePoliceText else strings.roleUserText,
+                        onEditClick = null // Tanpa pensil!
+                    )
                 }
             }
 
@@ -198,6 +281,20 @@ fun ProfileScreen(
                         onClick = { onNavigate(Screen.Settings) }
                     )
 
+                    // Tombol Tukar Kode Undangan Polsek (hanya tampil jika role masih warga)
+                    if (!state.user.isPolice) {
+                        HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp), color = StrokeColor)
+
+                        ProfileMenuRow(
+                            icon = Icons.Default.Shield,
+                            iconBg = SoftPeach,
+                            iconTint = Maroon,
+                            title = strings.inviteCodeMenuTitle,
+                            subtitle = strings.inviteCodeMenuSub,
+                            onClick = { onNavigate(Screen.RedeemInvite) }
+                        )
+                    }
+
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp), color = StrokeColor)
 
                     ProfileMenuRow(
@@ -220,22 +317,49 @@ fun ProfileScreen(
 fun ProfileDetailRow(
     icon: ImageVector,
     label: String,
-    value: String
+    value: String,
+    onEditClick: (() -> Unit)? = null
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = TextGray,
-            modifier = Modifier.size(18.dp)
-        )
-        Spacer(modifier = Modifier.width(10.dp))
-        Column {
-            Text(text = label, fontSize = 11.sp, color = TextGray)
-            Text(text = value, fontSize = 13.sp, fontWeight = FontWeight.Medium, color = TextDark)
+        Row(
+            modifier = Modifier.weight(1f),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = TextGray,
+                modifier = Modifier.size(18.dp)
+            )
+            Spacer(modifier = Modifier.width(10.dp))
+            Column {
+                Text(text = label, fontSize = 11.sp, color = TextGray)
+                Text(
+                    text = value,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = TextDark
+                )
+            }
+        }
+
+        // Tampilkan ikon pensil jika editable
+        if (onEditClick != null) {
+            IconButton(
+                onClick = onEditClick,
+                modifier = Modifier.size(32.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = "Edit $label",
+                    tint = Maroon,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
         }
     }
 }

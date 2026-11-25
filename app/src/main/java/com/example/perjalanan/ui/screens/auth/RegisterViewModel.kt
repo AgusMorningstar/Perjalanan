@@ -57,8 +57,8 @@ class RegisterViewModel(
             _uiState.update { it.copy(errorMessage = "Password tidak boleh kosong") }
             return
         }
-        if (state.password.length < 6) {
-            _uiState.update { it.copy(errorMessage = "Password minimal 6 karakter") }
+        if (state.password.length < 8) {
+            _uiState.update { it.copy(errorMessage = "Password minimal 8 karakter") }
             return
         }
 
@@ -83,10 +83,10 @@ class RegisterViewModel(
         }
     }
 
-    fun registerWithGoogle() {
+    fun registerWithGoogle(idToken: String = "") {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-            val result = authRepository.loginWithGoogle()
+            val result = authRepository.loginWithGoogle(idToken)
             result.onSuccess {
                 _uiState.update {
                     it.copy(

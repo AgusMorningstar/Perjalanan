@@ -29,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.perjalanan.ui.localization.LocalAppStrings
+import com.example.perjalanan.ui.theme.LocalAppColors
 import com.example.perjalanan.ui.navigation.Screen
 import com.example.perjalanan.ui.theme.Cream
 import com.example.perjalanan.ui.theme.Maroon
@@ -54,6 +55,7 @@ fun PoliceBottomBar(
     onNavigate: (Screen) -> Unit
 ) {
     val strings = LocalAppStrings.current
+    val colors = LocalAppColors.current
     val items = listOf(
         PoliceNavItem(strings.navDashboard, Icons.Default.LocalPolice, Screen.PoliceDashboard),
         PoliceNavItem(strings.navMap, Icons.Default.Map, Screen.PoliceMap),
@@ -61,7 +63,7 @@ fun PoliceBottomBar(
     )
 
     NavigationBar(
-        containerColor = White,
+        containerColor = if (colors.isDark) colors.cardBackground else White,
         tonalElevation = 0.dp,
         modifier = Modifier
             .fillMaxWidth()

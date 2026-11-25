@@ -54,12 +54,11 @@ class LoginViewModel(
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
             val result = authRepository.login(state.email, state.password)
             result.onSuccess { user ->
-                val isPolice = user.role.equals("Polisi", ignoreCase = true)
                 _uiState.update {
                     it.copy(
                         isLoading = false,
                         isSuccess = true,
-                        isPolice = isPolice
+                        isPolice = user.isPolice
                     )
                 }
             }.onFailure { err ->
@@ -73,17 +72,16 @@ class LoginViewModel(
         }
     }
 
-    fun loginWithGoogle() {
+    fun loginWithGoogle(idToken: String = "") {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-            val result = authRepository.loginWithGoogle()
+            val result = authRepository.loginWithGoogle(idToken)
             result.onSuccess { user ->
-                val isPolice = user.role.equals("Polisi", ignoreCase = true)
                 _uiState.update {
                     it.copy(
                         isLoading = false,
                         isSuccess = true,
-                        isPolice = isPolice
+                        isPolice = user.isPolice
                     )
                 }
             }.onFailure { err ->

@@ -530,6 +530,7 @@ fun SpeechBubble(
     tailEndPadding: androidx.compose.ui.unit.Dp,
     isTailOnRight: Boolean
 ) {
+    val bubbleColor = CardBg
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -540,7 +541,7 @@ fun SpeechBubble(
                 .fillMaxWidth()
                 .shadow(elevation = 2.dp, shape = RoundedCornerShape(20.dp)),
             shape = RoundedCornerShape(20.dp),
-            color = CardBg,
+            color = bubbleColor,
             border = BorderStroke(1.dp, StrokeColor)
         ) {
             Text(
@@ -587,7 +588,7 @@ fun SpeechBubble(
                         close()
                     }
                 }
-                drawPath(path = path, color = CardBg)
+                drawPath(path = path, color = bubbleColor)
             }
         }
     }

@@ -2,12 +2,18 @@ package com.example.perjalanan.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.perjalanan.ui.screens.auth.ChangePasswordScreen
+import com.example.perjalanan.ui.screens.auth.ForgotPasswordScreen
 import com.example.perjalanan.ui.screens.auth.LoginScreen
+import com.example.perjalanan.ui.screens.auth.RedeemInviteScreen
 import com.example.perjalanan.ui.screens.auth.RegisterScreen
+import com.example.perjalanan.ui.screens.auth.RequestPoliceScreen
+import com.example.perjalanan.ui.screens.auth.RequestPoliceSentScreen
 import com.example.perjalanan.ui.screens.auth.VerifyCodeScreen
 import com.example.perjalanan.ui.screens.emergency.EmergencyScreen
 import com.example.perjalanan.ui.screens.home.HomeScreen
@@ -53,10 +59,22 @@ fun AppNavGraph(
                     }
                 },
                 onNavigateToForgotPassword = {
-                    navController.navigate(Screen.VerifyCode.route)
+                    navController.navigate(Screen.ForgotPassword.route)
                 },
                 onNavigateToRegister = {
                     navController.navigate(Screen.Register.route)
+                }
+            )
+        }
+
+        // FORGOT PASSWORD
+        composable(Screen.ForgotPassword.route) {
+            ForgotPasswordScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onOtpSent = { identifier, destination ->
+                    navController.navigate(Screen.VerifyCode.createRoute(identifier, destination))
                 }
             )
         }
@@ -68,8 +86,58 @@ fun AppNavGraph(
                     navController.popBackStack()
                 },
                 onRegisterSuccess = {
-                    navController.navigate(Screen.Home.route) {
+                    // Setelah register berhasil, arahkan ke halaman tukar kode undangan
+                    navController.navigate(Screen.RedeemInvite.route) {
                         popUpTo(Screen.Login.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        // REDEEM INVITE CODE (Tukar Kode Undangan Polsek)
+        composable(Screen.RedeemInvite.route) {
+            RedeemInviteScreen(
+                onSkipAsUser = {
+                    // Lewati → masuk sebagai warga biasa
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.RedeemInvite.route) { inclusive = true }
+                    }
+                },
+                onRedeemSuccess = {
+                    // Kode berhasil ditukar → masuk sebagai polisi (bersihkan stack warga)
+                    navController.navigate(Screen.PoliceDashboard.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
+                onRequestCode = {
+                    navController.navigate(Screen.RequestPolice.route)
+                }
+            )
+        }
+
+        // REQUEST KODE POLISI (Form kirim request ke admin)
+        composable(Screen.RequestPolice.route) {
+            RequestPoliceScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onRequestSent = {
+                    navController.navigate(Screen.RequestPoliceSent.route) {
+                        popUpTo(Screen.RequestPolice.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        // HALAMAN KONFIRMASI REQUEST TERKIRIM
+        composable(Screen.RequestPoliceSent.route) {
+            RequestPoliceSentScreen(
+                onBackToRedeemInvite = {
+                    navController.navigate(Screen.RedeemInvite.route) {
+                        popUpTo(Screen.RedeemInvite.route) { inclusive = true }
+                    }
+                },
+                onContinueAsUser = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(0) { inclusive = true }
                     }
                 }
             )
@@ -86,7 +154,7 @@ fun AppNavGraph(
             )
         }
 
-        // MAP
+        // MAP (Citizen)
         composable(Screen.Map.route) {
             MapScreen(
                 onNavigate = { screen ->
@@ -149,9 +217,6 @@ fun AppNavGraph(
                     navController.navigate(Screen.PoliceMap.route) {
                         launchSingleTop = true
                     }
-                },
-                onNavigateBack = {
-                    navController.popBackStack()
                 }
             )
         }
@@ -197,7 +262,7 @@ fun AppNavGraph(
                     navController.navigate(Screen.Settings.route)
                 },
                 onNavigateToChangePassword = {
-                    navController.navigate(Screen.ChangePassword.route)
+                    navController.navigate(Screen.ChangePassword.createRoute(""))
                 },
                 onLogoutSuccess = {
                     navController.navigate(Screen.Login.route) {
@@ -208,20 +273,46 @@ fun AppNavGraph(
         }
 
         // VERIFY CODE
-        composable(Screen.VerifyCode.route) {
+        composable(
+            route = Screen.VerifyCode.route,
+            arguments = listOf(
+                navArgument("identifier") {
+                    type = NavType.StringType
+                    defaultValue = ""
+                },
+                navArgument("destination") {
+                    type = NavType.StringType
+                    defaultValue = ""
+                }
+            )
+        ) { backStackEntry ->
+            val identifier = backStackEntry.arguments?.getString("identifier") ?: ""
+            val destination = backStackEntry.arguments?.getString("destination") ?: ""
             VerifyCodeScreen(
+                identifier = identifier,
+                destination = destination,
                 onNavigateBack = {
                     navController.popBackStack()
                 },
-                onNavigateToChangePassword = {
-                    navController.navigate(Screen.ChangePassword.route)
+                onNavigateToChangePassword = { resetToken ->
+                    navController.navigate(Screen.ChangePassword.createRoute(resetToken))
                 }
             )
         }
 
         // CHANGE PASSWORD
-        composable(Screen.ChangePassword.route) {
+        composable(
+            route = Screen.ChangePassword.route,
+            arguments = listOf(
+                navArgument("resetToken") {
+                    type = NavType.StringType
+                    defaultValue = ""
+                }
+            )
+        ) { backStackEntry ->
+            val resetToken = backStackEntry.arguments?.getString("resetToken") ?: ""
             ChangePasswordScreen(
+                resetToken = resetToken,
                 onNavigateBack = {
                     navController.popBackStack()
                 },

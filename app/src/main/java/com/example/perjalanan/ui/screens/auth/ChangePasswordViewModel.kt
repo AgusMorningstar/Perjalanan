@@ -38,25 +38,35 @@ class ChangePasswordViewModel(
         _uiState.update { it.copy(isPasswordVisible = !it.isPasswordVisible) }
     }
 
-    fun savePassword() {
+    fun savePassword(resetToken: String = "") {
         val state = _uiState.value
-        if (state.newPassword.length < 6) {
-            _uiState.update { it.copy(errorMessage = "Kata sandi minimal 6 karakter") }
+        if (state.newPassword.length < 8) {
+            _uiState.update { it.copy(errorMessage = "Kata sandi minimal 8 karakter") }
             return
         }
         if (state.newPassword != state.confirmPassword) {
-            _uiState.update { it.copy(errorMessage = "Konfirmasi kata sandi tidak sesuai") }
+            _uiState.update { it.copy(errorMessage = "Konfirmasi kata sandi tidak cocok") }
             return
         }
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-            val result = authRepository.changePassword(state.newPassword)
+
+            val result = if (resetToken.isNotBlank()) {
+                authRepository.resetPassword(resetToken, state.newPassword)
+            } else {
+                authRepository.changePassword(state.newPassword)
+            }
+
             result.onSuccess {
                 _uiState.update { it.copy(isLoading = false, isSuccess = true) }
             }.onFailure { err ->
-                _uiState.update { it.copy(isLoading = false, errorMessage = err.message) }
+                _uiState.update { it.copy(isLoading = false, errorMessage = err.message ?: "Gagal mengubah kata sandi") }
             }
         }
+    }
+
+    fun resetState() {
+        _uiState.update { it.copy(isSuccess = false, errorMessage = null) }
     }
 }

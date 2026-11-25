@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -43,6 +42,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.perjalanan.ui.components.PerjalananTopBar
+import com.example.perjalanan.ui.localization.LocalAppStrings
+import com.example.perjalanan.ui.theme.LocalAppColors
 import com.example.perjalanan.ui.theme.CardBg
 import com.example.perjalanan.ui.theme.Cream
 import com.example.perjalanan.ui.theme.Maroon
@@ -55,23 +56,28 @@ import com.example.perjalanan.ui.theme.White
 
 @Composable
 fun VerifyCodeScreen(
+    identifier: String = "",
+    destination: String = "",
     onNavigateBack: () -> Unit,
-    onNavigateToChangePassword: () -> Unit,
+    onNavigateToChangePassword: (resetToken: String) -> Unit,
     viewModel: VerifyCodeViewModel = viewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
     val focusRequesters = remember { List(4) { FocusRequester() } }
+    val strings = LocalAppStrings.current
+    val colors = LocalAppColors.current
 
     LaunchedEffect(state.isSuccess) {
         if (state.isSuccess) {
-            onNavigateToChangePassword()
+            onNavigateToChangePassword(state.resetToken ?: "")
+            viewModel.resetState()
         }
     }
 
     Scaffold(
         topBar = {
             PerjalananTopBar(
-                title = "Verifikasi Kode",
+                title = strings.verifyCodeTitle,
                 onBackClick = onNavigateBack
             )
         },
@@ -105,14 +111,20 @@ fun VerifyCodeScreen(
             Spacer(modifier = Modifier.height(18.dp))
 
             Text(
-                text = "Masukkan Kode OTP",
+                text = strings.enterOtpTitle,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = Maroon
             )
 
+            val displayDesc = if (destination.isNotBlank()) {
+                "Kami telah mengirimkan 4 digit kode verifikasi ke $destination"
+            } else {
+                strings.otpSentDesc
+            }
+
             Text(
-                text = "Kami telah mengirimkan 4 digit kode verifikasi ke email Anda.",
+                text = displayDesc,
                 fontSize = 13.sp,
                 color = TextGray,
                 textAlign = TextAlign.Center,
@@ -176,17 +188,17 @@ fun VerifyCodeScreen(
             // Resend Timer
             if (state.isTimerActive) {
                 Text(
-                    text = "Kirim ulang kode (00:${state.secondsRemaining.toString().padStart(2, '0')})",
+                    text = "${strings.resendCodeTimer} (00:${state.secondsRemaining.toString().padStart(2, '0')})",
                     color = TextGray,
                     fontSize = 13.sp
                 )
             } else {
                 Text(
-                    text = "Kirim ulang kode",
+                    text = strings.resendCode,
                     color = Maroon,
                     fontWeight = FontWeight.Bold,
                     fontSize = 13.sp,
-                    modifier = Modifier.clickable { viewModel.startTimer() }
+                    modifier = Modifier.clickable { viewModel.resend(identifier) }
                 )
             }
 
@@ -194,7 +206,7 @@ fun VerifyCodeScreen(
 
             // Verify Button
             Button(
-                onClick = viewModel::verify,
+                onClick = { viewModel.verify(identifier) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
@@ -205,7 +217,7 @@ fun VerifyCodeScreen(
                 if (state.isLoading) {
                     CircularProgressIndicator(modifier = Modifier.size(24.dp), color = White, strokeWidth = 2.dp)
                 } else {
-                    Text(text = "Verifikasi", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = White)
+                    Text(text = strings.btnVerify, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = White)
                 }
             }
         }

@@ -24,8 +24,10 @@ import androidx.compose.material.icons.filled.Business
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.LocalPolice
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.LockReset
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Settings
@@ -52,10 +54,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.perjalanan.ui.components.ChangePasswordProfileDialog
+import com.example.perjalanan.ui.components.EditProfileFieldDialog
+import com.example.perjalanan.ui.components.EditableFieldType
 import com.example.perjalanan.ui.components.LogoutConfirmDialog
 import com.example.perjalanan.ui.components.PerjalananTopBar
 import com.example.perjalanan.ui.components.PoliceBottomBar
 import com.example.perjalanan.ui.localization.LocalAppStrings
+import com.example.perjalanan.ui.theme.LocalAppColors
 import com.example.perjalanan.ui.navigation.Screen
 import com.example.perjalanan.ui.screens.profile.ProfileDetailRow
 import com.example.perjalanan.ui.screens.profile.ProfileMenuRow
@@ -75,17 +81,18 @@ import com.example.perjalanan.ui.theme.White
 
 @Composable
 fun PoliceProfileScreen(
-    onNavigateBack: () -> Unit,
-    onNavigateToSettings: () -> Unit,
-    onNavigateToChangePassword: () -> Unit,
-    onLogoutSuccess: () -> Unit,
+    onNavigateBack: () -> Unit = {},
     onNavigateToDashboard: () -> Unit = {},
     onNavigateToMap: () -> Unit = {},
+    onNavigateToSettings: () -> Unit = {},
+    onNavigateToChangePassword: () -> Unit = {},
+    onLogoutSuccess: () -> Unit = {},
     viewModel: PoliceProfileViewModel = viewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
-    val snackbarHostState = remember { SnackbarHostState() }
     val strings = LocalAppStrings.current
+    val colors = LocalAppColors.current
+    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(state.toastMessage) {
         state.toastMessage?.let { msg ->
@@ -98,6 +105,33 @@ fun PoliceProfileScreen(
         if (state.isLoggedOut) {
             onLogoutSuccess()
         }
+    }
+
+    // Dialog Edit Field (Nama, Email, Telepon)
+    state.editingField?.let { fieldType ->
+        val initialVal = when (fieldType) {
+            EditableFieldType.NAME -> state.officer.name
+            EditableFieldType.EMAIL -> state.officer.email
+            EditableFieldType.PHONE -> state.officer.phone
+        }
+        EditProfileFieldDialog(
+            fieldType = fieldType,
+            initialValue = initialVal,
+            isLoading = state.isDialogLoading,
+            errorMessage = state.dialogErrorMessage,
+            onDismiss = viewModel::closeEditFieldDialog,
+            onConfirm = viewModel::submitFieldUpdate
+        )
+    }
+
+    // Dialog Ubah Password
+    if (state.isChangePasswordDialogOpen) {
+        ChangePasswordProfileDialog(
+            isLoading = state.isDialogLoading,
+            errorMessage = state.dialogErrorMessage,
+            onDismiss = viewModel::closeChangePasswordDialog,
+            onConfirm = viewModel::submitPasswordChange
+        )
     }
 
     if (state.isLogoutDialogOpen) {
@@ -113,25 +147,25 @@ fun PoliceProfileScreen(
             shape = RoundedCornerShape(20.dp),
             containerColor = CardBg,
             title = {
-                Text(text = "Pengaturan Alarm SOS", fontWeight = FontWeight.Bold, color = Maroon)
+                Text(text = strings.alarmSettingsTitle, fontWeight = FontWeight.Bold, color = Maroon)
             },
             text = {
                 Column {
                     Text(
-                        text = "Status Alarm Saat Ini: ${if (state.officer.isAlarmActive) "AKTIF" else "NONAKTIF"}",
+                        text = "${strings.currentAlarmStatusLabel} ${if (state.officer.isAlarmActive) strings.statusActive else strings.statusInactive}",
                         fontSize = 13.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = if (state.officer.isAlarmActive) SosRed else TextGray,
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
                     Text(
-                        text = "Pilih aksi pengontrolan sirine darurat:",
+                        text = strings.alarmControlAction,
                         fontSize = 12.sp,
                         color = TextDark,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                     Text(
-                        text = "• Aktifkan Sirine Alarm",
+                        text = strings.activateAlarmAction,
                         fontSize = 14.sp,
                         color = Maroon,
                         fontWeight = FontWeight.Bold,
@@ -141,7 +175,7 @@ fun PoliceProfileScreen(
                             .padding(vertical = 8.dp)
                     )
                     Text(
-                        text = "• Matikan Sirine Alarm",
+                        text = strings.deactivateAlarmAction,
                         fontSize = 14.sp,
                         color = SosRed,
                         fontWeight = FontWeight.Bold,
@@ -155,7 +189,7 @@ fun PoliceProfileScreen(
             confirmButton = {},
             dismissButton = {
                 TextButton(onClick = viewModel::closeAlarmSettings) {
-                    Text("Tutup", color = Maroon)
+                    Text(strings.close, color = Maroon)
                 }
             }
         )
@@ -260,7 +294,7 @@ fun PoliceProfileScreen(
                         .padding(horizontal = 10.dp, vertical = 4.dp)
                 ) {
                     Text(
-                        text = "Status: ${state.officer.dutyStatusText}",
+                        text = "Status: ${if (state.officer.isDutyActive) strings.policeDutyStatusStandby else "-"}",
                         color = Maroon,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Bold
@@ -270,7 +304,7 @@ fun PoliceProfileScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // OFFICER DETAILS CARD
+            // OFFICER DETAILS CARD (DENGAN IKON PENSIL UNTUK DATA AKUN)
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
@@ -288,15 +322,76 @@ fun PoliceProfileScreen(
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
 
-                    ProfileDetailRow(icon = Icons.Default.Badge, label = strings.idNumber, value = state.officer.id)
+                    // 1. Nama Lengkap (Editable dengan pensil)
+                    ProfileDetailRow(
+                        icon = Icons.Default.Person,
+                        label = strings.fullName,
+                        value = state.officer.name,
+                        onEditClick = { viewModel.openEditFieldDialog(EditableFieldType.NAME) }
+                    )
                     HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp), color = StrokeColor)
-                    ProfileDetailRow(icon = Icons.Default.Email, label = "Email", value = state.officer.email)
+
+                    // 2. Email (Editable dengan pensil)
+                    ProfileDetailRow(
+                        icon = Icons.Default.Email,
+                        label = strings.emailLabel,
+                        value = state.officer.email,
+                        onEditClick = { viewModel.openEditFieldDialog(EditableFieldType.EMAIL) }
+                    )
                     HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp), color = StrokeColor)
-                    ProfileDetailRow(icon = Icons.Default.Phone, label = "Telepon", value = state.officer.phone)
+
+                    // 3. Telepon (Editable dengan pensil)
+                    ProfileDetailRow(
+                        icon = Icons.Default.Phone,
+                        label = strings.phoneLabel,
+                        value = state.officer.phone.ifBlank { strings.notSet },
+                        onEditClick = { viewModel.openEditFieldDialog(EditableFieldType.PHONE) }
+                    )
                     HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp), color = StrokeColor)
-                    ProfileDetailRow(icon = Icons.Default.Security, label = strings.dutyUnit, value = state.officer.unit)
+
+                    // 4. Password (Editable dengan pensil, butuh password lama)
+                    ProfileDetailRow(
+                        icon = Icons.Default.Lock,
+                        label = strings.passwordLabel,
+                        value = "••••••••",
+                        onEditClick = { viewModel.openChangePasswordDialog() }
+                    )
                     HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp), color = StrokeColor)
-                    ProfileDetailRow(icon = Icons.Default.Business, label = strings.headquarters, value = state.officer.office)
+
+                    // 5. ID Anggota / NRP (Read-only, tanpa pensil)
+                    ProfileDetailRow(
+                        icon = Icons.Default.Badge,
+                        label = strings.idNumber,
+                        value = state.officer.id,
+                        onEditClick = null
+                    )
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp), color = StrokeColor)
+
+                    // 6. Satuan Tugas (Read-only, tanpa pensil)
+                    ProfileDetailRow(
+                        icon = Icons.Default.Security,
+                        label = strings.dutyUnit,
+                        value = state.officer.unit,
+                        onEditClick = null
+                    )
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp), color = StrokeColor)
+
+                    // 7. Kantor Polsek (Read-only, tanpa pensil)
+                    ProfileDetailRow(
+                        icon = Icons.Default.Business,
+                        label = strings.headquarters,
+                        value = state.officer.office,
+                        onEditClick = null
+                    )
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp), color = StrokeColor)
+
+                    // 8. Role (TIDAK ADA PENSIL - role polisi terikat kode undangan polsek)
+                    ProfileDetailRow(
+                        icon = Icons.Default.Security,
+                        label = strings.roleLabel,
+                        value = strings.rolePoliceText,
+                        onEditClick = null
+                    )
                 }
             }
 
@@ -340,7 +435,7 @@ fun PoliceProfileScreen(
                         iconTint = Maroon,
                         title = strings.changePasswordMenu,
                         subtitle = strings.changePasswordSub,
-                        onClick = onNavigateToChangePassword
+                        onClick = viewModel::openChangePasswordDialog
                     )
 
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp), color = StrokeColor)

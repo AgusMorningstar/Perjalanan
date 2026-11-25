@@ -41,6 +41,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.perjalanan.ui.components.PerjalananBottomBar
 import com.example.perjalanan.ui.components.PerjalananTopBar
+import com.example.perjalanan.ui.localization.LocalAppStrings
+import com.example.perjalanan.ui.theme.LocalAppColors
 import com.example.perjalanan.ui.navigation.Screen
 import com.example.perjalanan.ui.theme.CardBg
 import com.example.perjalanan.ui.theme.Cream
@@ -59,10 +61,12 @@ fun EmergencyScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
+    val strings = LocalAppStrings.current
+    val colors = LocalAppColors.current
 
     Scaffold(
         topBar = {
-            PerjalananTopBar(title = "Panggilan Darurat")
+            PerjalananTopBar(title = strings.emergencyCallTitle)
         },
         bottomBar = {
             PerjalananBottomBar(
@@ -100,14 +104,14 @@ fun EmergencyScreen(
             Spacer(modifier = Modifier.height(18.dp))
 
             Text(
-                text = "Kepolisian Republik Indonesia",
+                text = strings.policeInstitution,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = Maroon
             )
 
             Text(
-                text = state.policeUnitInfo,
+                text = strings.policeTollFree,
                 fontSize = 13.sp,
                 color = TextGray,
                 modifier = Modifier.padding(top = 4.dp)
@@ -136,7 +140,7 @@ fun EmergencyScreen(
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
-                    text = "Hubungi ${state.emergencyNumber} Sekarang",
+                    text = "${strings.callNowPrefix} ${state.emergencyNumber}",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.ExtraBold,
                     color = White
@@ -167,13 +171,13 @@ fun EmergencyScreen(
                     Spacer(modifier = Modifier.width(12.dp))
                     Column {
                         Text(
-                            text = "Petunjuk Darurat",
+                            text = strings.emergencyGuideTitle,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = Maroon
                         )
                         Text(
-                            text = state.description,
+                            text = strings.emergencyGuideDesc,
                             fontSize = 12.sp,
                             color = TextDark,
                             lineHeight = 18.sp,

@@ -18,6 +18,7 @@ data class VerifyCodeUiState(
     val isTimerActive: Boolean = true,
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
+    val resetToken: String? = null,
     val isSuccess: Boolean = false
 )
 
@@ -52,7 +53,27 @@ class VerifyCodeViewModel(
         }
     }
 
-    fun verify() {
+    fun resend(identifier: String) {
+        if (_uiState.value.isTimerActive || identifier.isBlank()) return
+
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+            val result = authRepository.requestForgotPasswordOtp(identifier)
+            result.onSuccess {
+                _uiState.update { it.copy(isLoading = false) }
+                startTimer()
+            }.onFailure { err ->
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = err.message ?: "Gagal mengirim ulang kode"
+                    )
+                }
+            }
+        }
+    }
+
+    fun verify(identifier: String) {
         val code = _uiState.value.otp.joinToString("")
         if (code.length < 4) {
             _uiState.update { it.copy(errorMessage = "Lengkapi 4 digit kode verifikasi") }
@@ -61,13 +82,40 @@ class VerifyCodeViewModel(
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-            val result = authRepository.verifyCode(code)
-            result.onSuccess {
-                _uiState.update { it.copy(isLoading = false, isSuccess = true) }
-            }.onFailure { err ->
-                _uiState.update { it.copy(isLoading = false, errorMessage = err.message) }
+
+            // Jika identifier ada (dari flow Lupa Password online), gunakan API verifyOtp
+            if (identifier.isNotBlank()) {
+                val result = authRepository.verifyOtp(identifier, code)
+                result.onSuccess { token ->
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            resetToken = token,
+                            isSuccess = true
+                        )
+                    }
+                }.onFailure { err ->
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = err.message ?: "Verifikasi kode OTP gagal"
+                        )
+                    }
+                }
+            } else {
+                // Fallback verifikasi lokal jika dipanggil tanpa identifier
+                val result = authRepository.verifyCode(code)
+                result.onSuccess {
+                    _uiState.update { it.copy(isLoading = false, isSuccess = true) }
+                }.onFailure { err ->
+                    _uiState.update { it.copy(isLoading = false, errorMessage = err.message) }
+                }
             }
         }
+    }
+
+    fun resetState() {
+        _uiState.update { it.copy(isSuccess = false, errorMessage = null) }
     }
 
     override fun onCleared() {

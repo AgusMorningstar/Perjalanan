@@ -14,6 +14,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.perjalanan.ui.localization.LocalAppStrings
+import com.example.perjalanan.ui.theme.LocalAppColors
 import com.example.perjalanan.ui.theme.CardBg
 import com.example.perjalanan.ui.theme.Maroon
 import com.example.perjalanan.ui.theme.SosRed
@@ -28,6 +29,7 @@ fun LogoutConfirmDialog(
     onConfirm: () -> Unit
 ) {
     val strings = LocalAppStrings.current
+    val colors = LocalAppColors.current
     AlertDialog(
         onDismissRequest = onDismiss,
         shape = RoundedCornerShape(20.dp),

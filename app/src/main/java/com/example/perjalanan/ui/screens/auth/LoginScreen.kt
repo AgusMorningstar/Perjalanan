@@ -1,5 +1,9 @@
 package com.example.perjalanan.ui.screens.auth
 
+import android.util.Log
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -58,8 +62,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.perjalanan.R
+import com.example.perjalanan.data.remote.ApiConfig
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.example.perjalanan.ui.localization.LocalAppStrings
+import com.example.perjalanan.ui.theme.LocalAppColors
 import com.example.perjalanan.ui.theme.CardBg
 import com.example.perjalanan.ui.theme.Cream
 import com.example.perjalanan.ui.theme.Maroon
@@ -81,6 +92,29 @@ fun LoginScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
     val focusManager = LocalFocusManager.current
+    val context = LocalContext.current
+    val strings = LocalAppStrings.current
+    val colors = LocalAppColors.current
+
+    val googleSignInLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+        try {
+            val account = task.getResult(ApiException::class.java)
+            val idToken = account?.idToken
+            if (!idToken.isNullOrBlank()) {
+                viewModel.loginWithGoogle(idToken)
+            } else {
+                Toast.makeText(context, "Gagal mendapatkan token Google", Toast.LENGTH_SHORT).show()
+            }
+        } catch (e: ApiException) {
+            Log.e("LoginScreen", "Google Sign-In failed code: ${e.statusCode}", e)
+            if (e.statusCode != 12501 && e.statusCode != 12502) {
+                Toast.makeText(context, "Google Sign-In gagal (${e.statusCode}): ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
     LaunchedEffect(state.isSuccess) {
         if (state.isSuccess) {
@@ -307,7 +341,7 @@ fun LoginScreen(
 
                 // PEMISAH "atau"
                 Text(
-                    text = "atau",
+                    text = strings.orDivider,
                     fontSize = 13.sp,
                     color = Maroon,
                     textAlign = TextAlign.Center,
@@ -318,7 +352,14 @@ fun LoginScreen(
                 OutlinedButton(
                     onClick = {
                         focusManager.clearFocus()
-                        viewModel.loginWithGoogle()
+                        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                            .requestIdToken(ApiConfig.GOOGLE_WEB_CLIENT_ID)
+                            .requestEmail()
+                            .build()
+                        val googleClient = GoogleSignIn.getClient(context, gso)
+                        googleClient.signOut().addOnCompleteListener {
+                            googleSignInLauncher.launch(googleClient.signInIntent)
+                        }
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -339,7 +380,7 @@ fun LoginScreen(
                         )
                         Spacer(modifier = Modifier.width(10.dp))
                         Text(
-                            text = "Login dengan Google",
+                            text = strings.signInWithGoogle,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = Maroon
@@ -362,9 +403,9 @@ fun LoginScreen(
 
                 // BELUM PUNYA AKUN? DAFTAR
                 val registerText = buildAnnotatedString {
-                    append("Belum punya akun? ")
+                    append(strings.noAccountPrompt)
                     withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = Maroon)) {
-                        append("Daftar")
+                        append(strings.registerLink)
                     }
                 }
                 Text(
@@ -399,7 +440,7 @@ fun LoginScreen(
                         border = BorderStroke(1.dp, StrokeColor)
                     ) {
                         Text(
-                            text = "Demo Korban",
+                            text = strings.demoCitizen,
                             fontSize = 11.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = TextDark
@@ -420,7 +461,7 @@ fun LoginScreen(
                         border = BorderStroke(1.dp, StrokeColor)
                     ) {
                         Text(
-                            text = "Demo Polisi",
+                            text = strings.demoPolice,
                             fontSize = 11.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = Maroon

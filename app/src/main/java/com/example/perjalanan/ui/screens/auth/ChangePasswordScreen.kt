@@ -42,6 +42,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.perjalanan.ui.components.PerjalananTopBar
+import com.example.perjalanan.ui.localization.LocalAppStrings
+import com.example.perjalanan.ui.theme.LocalAppColors
 import com.example.perjalanan.ui.theme.CardBg
 import com.example.perjalanan.ui.theme.Cream
 import com.example.perjalanan.ui.theme.Maroon
@@ -53,22 +55,26 @@ import com.example.perjalanan.ui.theme.White
 
 @Composable
 fun ChangePasswordScreen(
+    resetToken: String = "",
     onNavigateBack: () -> Unit,
     onNavigateToLogin: () -> Unit,
     viewModel: ChangePasswordViewModel = viewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
+    val strings = LocalAppStrings.current
+    val colors = LocalAppColors.current
 
     LaunchedEffect(state.isSuccess) {
         if (state.isSuccess) {
             onNavigateToLogin()
+            viewModel.resetState()
         }
     }
 
     Scaffold(
         topBar = {
             PerjalananTopBar(
-                title = "Ubah Kata Sandi",
+                title = strings.changePasswordDialogTitle,
                 onBackClick = onNavigateBack
             )
         },
@@ -101,14 +107,14 @@ fun ChangePasswordScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "Kata Sandi Baru",
+                text = strings.newPasswordLabel,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = Maroon
             )
 
             Text(
-                text = "Buat kata sandi baru yang kuat minimal 6 karakter.",
+                text = strings.newPasswordScreenDesc,
                 fontSize = 13.sp,
                 color = TextGray,
                 textAlign = TextAlign.Center,
@@ -117,28 +123,23 @@ fun ChangePasswordScreen(
 
             Spacer(modifier = Modifier.height(28.dp))
 
-            if (state.errorMessage != null) {
-                Text(
-                    text = state.errorMessage ?: "",
-                    color = SosRed,
-                    fontSize = 13.sp,
-                    modifier = Modifier.padding(bottom = 12.dp)
-                )
-            }
-
+            // New Password Field
             OutlinedTextField(
                 value = state.newPassword,
                 onValueChange = viewModel::onNewPasswordChange,
-                modifier = Modifier.fillMaxWidth(),
-                label = { Text("Kata Sandi Baru") },
+                label = { Text(strings.newPasswordLabel) },
                 leadingIcon = {
-                    Icon(imageVector = Icons.Default.Lock, contentDescription = null, tint = Maroon)
+                    Icon(
+                        imageVector = Icons.Default.Lock,
+                        contentDescription = null,
+                        tint = Maroon
+                    )
                 },
                 trailingIcon = {
                     IconButton(onClick = viewModel::toggleVisibility) {
                         Icon(
                             imageVector = if (state.isPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                            contentDescription = null,
+                            contentDescription = if (state.isPasswordVisible) "Sembunyikan password" else "Lihat password",
                             tint = TextGray
                         )
                     }
@@ -146,7 +147,8 @@ fun ChangePasswordScreen(
                 visualTransformation = if (state.isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 singleLine = true,
-                shape = RoundedCornerShape(14.dp),
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = Maroon,
                     unfocusedBorderColor = StrokeColor,
@@ -158,18 +160,25 @@ fun ChangePasswordScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Confirm Password Field
             OutlinedTextField(
                 value = state.confirmPassword,
                 onValueChange = viewModel::onConfirmPasswordChange,
-                modifier = Modifier.fillMaxWidth(),
-                label = { Text("Konfirmasi Kata Sandi") },
+                label = { Text(strings.confirmNewPasswordLabel) },
                 leadingIcon = {
-                    Icon(imageVector = Icons.Default.Lock, contentDescription = null, tint = Maroon)
+                    Icon(
+                        imageVector = Icons.Default.Lock,
+                        contentDescription = null,
+                        tint = Maroon
+                    )
                 },
                 visualTransformation = if (state.isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 singleLine = true,
-                shape = RoundedCornerShape(14.dp),
+                isError = state.errorMessage != null,
+                supportingText = state.errorMessage?.let { msg -> { Text(text = msg, color = SosRed) } },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = Maroon,
                     unfocusedBorderColor = StrokeColor,
@@ -182,7 +191,7 @@ fun ChangePasswordScreen(
             Spacer(modifier = Modifier.height(32.dp))
 
             Button(
-                onClick = viewModel::savePassword,
+                onClick = { viewModel.savePassword(resetToken) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
@@ -193,7 +202,7 @@ fun ChangePasswordScreen(
                 if (state.isLoading) {
                     CircularProgressIndicator(modifier = Modifier.size(24.dp), color = White, strokeWidth = 2.dp)
                 } else {
-                    Text(text = "Simpan Kata Sandi", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = White)
+                    Text(text = strings.btnSaveText, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = White)
                 }
             }
         }

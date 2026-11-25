@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "738871871137",
+    "project_id": "perjalanan-8c94e",
+    "storage_bucket": "perjalanan-8c94e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:738871871137:android:58bab60334c137eb1912e0",
+        "android_client_info": {
+          "package_name": "com.example.perjalanan"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCeTzT6-_5zfuxSicjl6Z-CRM-TbqWhaT4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

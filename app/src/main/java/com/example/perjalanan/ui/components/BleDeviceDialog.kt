@@ -58,6 +58,8 @@ import androidx.core.content.ContextCompat
 import com.example.perjalanan.data.ble.BleConnectionState
 import com.example.perjalanan.data.ble.BleManager
 import com.example.perjalanan.data.ble.DiscoveredBleDevice
+import com.example.perjalanan.ui.localization.LocalAppStrings
+import com.example.perjalanan.ui.theme.LocalAppColors
 import com.example.perjalanan.ui.theme.CardBg
 import com.example.perjalanan.ui.theme.GreenSafe
 import com.example.perjalanan.ui.theme.Maroon
@@ -85,6 +87,8 @@ fun BleDeviceDialog(
     onDismiss: () -> Unit
 ) {
     val context = LocalContext.current
+    val strings = LocalAppStrings.current
+    val colors = LocalAppColors.current
 
     // Bluetooth runtime permission launcher
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -149,7 +153,7 @@ fun BleDeviceDialog(
                     }
                     Spacer(modifier = Modifier.width(10.dp))
                     Text(
-                        text = "Sambungkan Alat",
+                        text = strings.connectDeviceTitle,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = Maroon
@@ -166,7 +170,7 @@ fun BleDeviceDialog(
                     IconButton(onClick = onStartScan) {
                         Icon(
                             imageVector = Icons.Default.Refresh,
-                            contentDescription = "Pindai Ulang",
+                            contentDescription = strings.rescan,
                             tint = Maroon
                         )
                     }
@@ -195,7 +199,7 @@ fun BleDeviceDialog(
                                 Spacer(modifier = Modifier.width(10.dp))
                                 Column {
                                     Text(
-                                        text = "Terhubung!",
+                                        text = strings.connectedStatus,
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 14.sp,
                                         color = GreenSafe
@@ -226,7 +230,7 @@ fun BleDeviceDialog(
                                 )
                                 Spacer(modifier = Modifier.width(10.dp))
                                 Text(
-                                    text = "Menghubungkan ke ${connectedDeviceName ?: "alat"}...",
+                                    text = "${strings.connectingTo} ${connectedDeviceName ?: "device"}...",
                                     fontSize = 13.sp,
                                     color = TextDark,
                                     fontWeight = FontWeight.Medium
@@ -237,7 +241,7 @@ fun BleDeviceDialog(
 
                     BleConnectionState.SCANNING -> {
                         Text(
-                            text = "Mencari perangkat Bluetooth di sekitar...",
+                            text = strings.scanningNearby,
                             fontSize = 12.sp,
                             color = TextGray,
                             modifier = Modifier.padding(bottom = 8.dp)
@@ -246,7 +250,7 @@ fun BleDeviceDialog(
 
                     BleConnectionState.FAILED -> {
                         Text(
-                            text = errorMessage ?: "Koneksi gagal. Pastikan ESP32 sudah menyala.",
+                            text = errorMessage ?: strings.connectionFailedDesc,
                             fontSize = 12.sp,
                             color = SosRed,
                             modifier = Modifier.padding(bottom = 8.dp)
@@ -255,7 +259,7 @@ fun BleDeviceDialog(
 
                     BleConnectionState.DISCONNECTED -> {
                         Text(
-                            text = "Pilih perangkat Bluetooth untuk disambungkan:",
+                            text = strings.selectBleDevice,
                             fontSize = 12.sp,
                             color = TextGray,
                             modifier = Modifier.padding(bottom = 8.dp)
@@ -442,7 +446,7 @@ fun BleDeviceDialog(
                                         colors = ButtonDefaults.buttonColors(containerColor = Maroon),
                                         modifier = Modifier.height(34.dp)
                                     ) {
-                                        Text("Pilih", fontSize = 11.sp, color = White)
+                                        Text(strings.btnConnect, fontSize = 11.sp, color = White)
                                     }
                                 }
                             }
@@ -458,7 +462,7 @@ fun BleDeviceDialog(
                     shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.outlinedButtonColors(contentColor = SosRed)
                 ) {
-                    Text("Putuskan Koneksi", fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                    Text(strings.btnDisconnect, fontSize = 13.sp, fontWeight = FontWeight.Bold)
                 }
             } else if (connectionState != BleConnectionState.CONNECTING) {
                 Button(
@@ -466,13 +470,13 @@ fun BleDeviceDialog(
                     shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Maroon)
                 ) {
-                    Text("Pindai Lagi", fontSize = 13.sp, color = White)
+                    Text(strings.rescan, fontSize = 13.sp, color = White)
                 }
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Tutup", color = Maroon)
+                Text(strings.close, color = Maroon)
             }
         }
     )

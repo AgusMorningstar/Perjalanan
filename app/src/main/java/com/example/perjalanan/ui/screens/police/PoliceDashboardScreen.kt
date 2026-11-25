@@ -63,6 +63,7 @@ import com.example.perjalanan.ui.components.PoliceBottomBar
 import com.example.perjalanan.ui.components.SosAlertData
 import com.example.perjalanan.ui.components.SosEmergencyDialog
 import com.example.perjalanan.ui.localization.LocalAppStrings
+import com.example.perjalanan.ui.theme.LocalAppColors
 import com.example.perjalanan.ui.navigation.Screen
 import com.example.perjalanan.ui.theme.CardBg
 import com.example.perjalanan.ui.theme.Cream
@@ -81,7 +82,7 @@ import com.example.perjalanan.ui.theme.White
 @Composable
 fun PoliceDashboardScreen(
     onNavigateToPoliceProfile: () -> Unit,
-    onNavigateBack: () -> Unit,
+    onNavigateBack: (() -> Unit)? = null,
     onNavigateToMap: () -> Unit = {},
     viewModel: PoliceDashboardViewModel = viewModel()
 ) {
@@ -89,6 +90,7 @@ fun PoliceDashboardScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
     val strings = LocalAppStrings.current
+    val colors = LocalAppColors.current
     var activeSosAlert by remember { mutableStateOf<SosAlertData?>(null) }
 
     LaunchedEffect(state.actionMessage) {
@@ -356,8 +358,8 @@ fun PoliceDashboardScreen(
                             id = "SOS-001",
                             victimName = "Salsabilaa",
                             locationAddress = "Jl. Pendidikan No.12, Makassar",
-                            distanceText = "1,8 km",
-                            etaText = "6 mnt",
+                            distanceText = "1.8 km",
+                            etaText = "6 ${strings.minutesAbbr}",
                             heartRate = 128
                         )
                         // 1. Tampilkan Pop-up Dialog In-App (dialog_sos.xml)
@@ -396,8 +398,8 @@ fun PoliceDashboardScreen(
                             id = report.id,
                             victimName = report.victimName,
                             locationAddress = report.locationAddress,
-                            distanceText = "1,8 km",
-                            etaText = "6 mnt",
+                            distanceText = "1.8 km",
+                            etaText = "6 ${strings.minutesAbbr}",
                             heartRate = report.heartRate,
                             latitude = report.latitude,
                             longitude = report.longitude
@@ -483,12 +485,12 @@ fun SosReportCard(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Lokasi: ${report.locationAddress}",
+                text = "${LocalAppStrings.current.locationPrefix}: ${report.locationAddress}",
                 fontSize = 12.sp,
                 color = TextDark
             )
             Text(
-                text = "Detak Jantung: ${report.heartRate} bpm (Lonjakan Kritis)",
+                text = "${LocalAppStrings.current.heartRateTitle}: ${report.heartRate} bpm (${LocalAppStrings.current.criticalSpike})",
                 fontSize = 11.sp,
                 color = SosRed,
                 fontWeight = FontWeight.SemiBold,

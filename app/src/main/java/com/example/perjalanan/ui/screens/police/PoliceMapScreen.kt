@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.perjalanan.ui.components.PoliceBottomBar
 import com.example.perjalanan.ui.localization.LocalAppStrings
+import com.example.perjalanan.ui.theme.LocalAppColors
 import com.example.perjalanan.ui.navigation.Screen
 import com.example.perjalanan.ui.screens.map.MapViewModel
 import com.example.perjalanan.ui.theme.CardBg
@@ -74,6 +75,7 @@ fun PoliceMapScreen(
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     val strings = LocalAppStrings.current
+    val colors = LocalAppColors.current
 
     Scaffold(
         bottomBar = {
@@ -99,7 +101,7 @@ fun PoliceMapScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color(0xFFE8ECEF)),
+                    .background(if (colors.isDark) Color(0xFF1E2328) else Color(0xFFE8ECEF)),
                 contentAlignment = Alignment.Center
             ) {
                 // Outer SOS Zone Circle (150m representation)
@@ -193,7 +195,7 @@ fun PoliceMapScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Default.LocationSearching,
-                        contentDescription = "Lokasi Saya",
+                        contentDescription = strings.myLocation,
                         tint = Maroon
                     )
                 }
@@ -270,7 +272,7 @@ fun PoliceMapScreen(
                     )
 
                     Text(
-                        text = "Koordinat: ${state.victimLat}, ${state.victimLng}",
+                        text = "${strings.coordinatesLabel}: ${state.victimLat}, ${state.victimLng}",
                         fontSize = 11.sp,
                         color = TextGray,
                         modifier = Modifier.padding(top = 2.dp)

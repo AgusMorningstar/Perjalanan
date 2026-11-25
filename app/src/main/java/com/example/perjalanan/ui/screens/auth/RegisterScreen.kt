@@ -1,5 +1,9 @@
 package com.example.perjalanan.ui.screens.auth
 
+import android.util.Log
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -44,6 +48,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -61,6 +66,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.perjalanan.R
+import com.example.perjalanan.data.remote.ApiConfig
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.example.perjalanan.ui.localization.LocalAppStrings
+import com.example.perjalanan.ui.theme.LocalAppColors
 import com.example.perjalanan.ui.theme.CardBg
 import com.example.perjalanan.ui.theme.Cream
 import com.example.perjalanan.ui.theme.Maroon
@@ -79,6 +90,29 @@ fun RegisterScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
     val focusManager = LocalFocusManager.current
+    val context = LocalContext.current
+    val strings = LocalAppStrings.current
+    val colors = LocalAppColors.current
+
+    val googleSignInLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+        try {
+            val account = task.getResult(ApiException::class.java)
+            val idToken = account?.idToken
+            if (!idToken.isNullOrBlank()) {
+                viewModel.registerWithGoogle(idToken)
+            } else {
+                Toast.makeText(context, "Gagal mendapatkan token Google", Toast.LENGTH_SHORT).show()
+            }
+        } catch (e: ApiException) {
+            Log.e("RegisterScreen", "Google Sign-In failed code: ${e.statusCode}", e)
+            if (e.statusCode != 12501 && e.statusCode != 12502) {
+                Toast.makeText(context, "Google Sign-In gagal (${e.statusCode}): ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
     LaunchedEffect(state.isSuccess) {
         if (state.isSuccess) {
@@ -332,7 +366,7 @@ fun RegisterScreen(
 
                 // PEMISAH "atau"
                 Text(
-                    text = "atau",
+                    text = strings.orDivider,
                     fontSize = 13.sp,
                     color = Maroon,
                     textAlign = TextAlign.Center,
@@ -343,7 +377,14 @@ fun RegisterScreen(
                 OutlinedButton(
                     onClick = {
                         focusManager.clearFocus()
-                        viewModel.registerWithGoogle()
+                        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                            .requestIdToken(ApiConfig.GOOGLE_WEB_CLIENT_ID)
+                            .requestEmail()
+                            .build()
+                        val googleClient = GoogleSignIn.getClient(context, gso)
+                        googleClient.signOut().addOnCompleteListener {
+                            googleSignInLauncher.launch(googleClient.signInIntent)
+                        }
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -364,7 +405,7 @@ fun RegisterScreen(
                         )
                         Spacer(modifier = Modifier.width(10.dp))
                         Text(
-                            text = "Daftar dengan Google",
+                            text = strings.signUpWithGoogle,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = Maroon
@@ -374,9 +415,9 @@ fun RegisterScreen(
 
                 // LINK LOGIN: "Sudah punya akun? Login"
                 val loginText = buildAnnotatedString {
-                    append("Sudah punya akun? ")
+                    append(strings.haveAccountPrompt)
                     withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = Maroon)) {
-                        append("Login")
+                        append(strings.loginLink)
                     }
                 }
                 Text(

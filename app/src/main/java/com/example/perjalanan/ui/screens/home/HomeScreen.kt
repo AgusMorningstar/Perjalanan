@@ -64,6 +64,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -77,6 +78,7 @@ import com.example.perjalanan.ui.components.PerjalananBottomBar
 import com.example.perjalanan.ui.components.SosAlertData
 import com.example.perjalanan.ui.components.SosEmergencyDialog
 import com.example.perjalanan.ui.localization.LocalAppStrings
+import com.example.perjalanan.ui.theme.LocalAppColors
 import com.example.perjalanan.ui.navigation.Screen
 import com.example.perjalanan.ui.theme.AlertEnd
 import com.example.perjalanan.ui.theme.AlertStart
@@ -105,7 +107,9 @@ fun HomeScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
     val strings = LocalAppStrings.current
+    val colors = LocalAppColors.current
     var activeIncomingSos by remember { mutableStateOf<SosAlertData?>(null) }
+    var isNotificationDialogOpen by remember { mutableStateOf(false) }
 
     LaunchedEffect(state.sosSentMessage) {
         state.sosSentMessage?.let { msg ->
@@ -146,6 +150,95 @@ fun HomeScreen(
         )
     }
 
+    if (isNotificationDialogOpen) {
+        AlertDialog(
+            onDismissRequest = { isNotificationDialogOpen = false },
+            shape = RoundedCornerShape(20.dp),
+            containerColor = CardBg,
+            icon = {
+                Box(
+                    modifier = Modifier
+                        .size(52.dp)
+                        .clip(CircleShape)
+                        .background(Peach),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Notifications,
+                        contentDescription = null,
+                        tint = Maroon,
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
+            },
+            title = {
+                Text(
+                    text = strings.notificationTitle,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    color = TextDark
+                )
+            },
+            text = {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Card(
+                        shape = RoundedCornerShape(14.dp),
+                        colors = CardDefaults.cardColors(containerColor = SoftGreen),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Shield,
+                                contentDescription = null,
+                                tint = GreenSafe,
+                                modifier = Modifier.size(22.dp)
+                            )
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Column {
+                                Text(
+                                    text = strings.notificationSystemActive,
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = TextDark
+                                )
+                                Text(
+                                    text = strings.notificationSystemActiveDesc,
+                                    fontSize = 11.sp,
+                                    color = TextGray
+                                )
+                            }
+                        }
+                    }
+
+                    Text(
+                        text = strings.notificationEmpty,
+                        fontSize = 12.sp,
+                        color = TextGray,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 4.dp)
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = { isNotificationDialogOpen = false },
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Maroon)
+                ) {
+                    Text(strings.close, color = White, fontWeight = FontWeight.Bold)
+                }
+            }
+        )
+    }
+
     if (state.isSosDialogOpen) {
         AlertDialog(
             onDismissRequest = viewModel::closeSosDialog,
@@ -161,7 +254,7 @@ fun HomeScreen(
             },
             title = {
                 Text(
-                    text = "Kirim sinyal SOS?",
+                    text = strings.sosSendConfirmTitle,
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp,
                     color = TextDark
@@ -169,7 +262,7 @@ fun HomeScreen(
             },
             text = {
                 Text(
-                    text = "Sinyal darurat beserta lokasi Anda saat ini akan segera dikirimkan ke kepolisian dan kontak darurat.",
+                    text = strings.sosSendConfirmBody,
                     fontSize = 14.sp,
                     color = TextGray
                 )
@@ -180,7 +273,7 @@ fun HomeScreen(
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = SosRed)
                 ) {
-                    Text("Kirim Sekarang", color = White, fontWeight = FontWeight.Bold)
+                    Text(strings.btnSendNow, color = White, fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
@@ -188,7 +281,7 @@ fun HomeScreen(
                     onClick = viewModel::closeSosDialog,
                     shape = RoundedCornerShape(12.dp)
                 ) {
-                    Text("Batal", color = Maroon)
+                    Text(strings.btnCancel, color = Maroon)
                 }
             }
         )
@@ -243,13 +336,13 @@ fun HomeScreen(
                             Spacer(modifier = Modifier.width(12.dp))
                             Column {
                                 Text(
-                                    text = "Halo, ${state.user.name}!",
+                                    text = "${strings.helloGreeting}, ${state.user.name.ifBlank { strings.defaultUserName }}!",
                                     color = White,
                                     fontSize = 18.sp,
                                     fontWeight = FontWeight.Bold
                                 )
                                 Text(
-                                    text = "Layanan Pemantauan Aktif",
+                                    text = strings.monitoringActive,
                                     color = Peach,
                                     fontSize = 12.sp
                                 )
@@ -257,14 +350,14 @@ fun HomeScreen(
                         }
 
                         IconButton(
-                            onClick = { onNavigate(Screen.PoliceDashboard) },
+                            onClick = { isNotificationDialogOpen = true },
                             modifier = Modifier
                                 .clip(CircleShape)
                                 .background(Color(0x22FFFFFF))
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Notifications,
-                                contentDescription = "Dashboard Polisi",
+                                contentDescription = strings.notificationTitle,
                                 tint = White
                             )
                         }
@@ -295,12 +388,12 @@ fun HomeScreen(
                                 Spacer(modifier = Modifier.width(10.dp))
                                 Column {
                                     Text(
-                                        text = "Status Keamanan",
+                                        text = strings.securityStatusLabel,
                                         color = White,
                                         fontSize = 11.sp
                                     )
                                     Text(
-                                        text = state.healthMetrics.securityStatus,
+                                        text = if (state.healthMetrics.securityStatus.equals("Aman", ignoreCase = true)) strings.securitySafe else state.healthMetrics.securityStatus,
                                         color = White,
                                         fontSize = 15.sp,
                                         fontWeight = FontWeight.Bold
@@ -315,7 +408,7 @@ fun HomeScreen(
                                     .padding(horizontal = 10.dp, vertical = 4.dp)
                             ) {
                                 Text(
-                                    text = "● Terproteksi",
+                                    text = strings.statusProtected,
                                     color = GreenSafe,
                                     fontSize = 11.sp,
                                     fontWeight = FontWeight.Bold
@@ -329,7 +422,7 @@ fun HomeScreen(
             // SENSORS & METRICS
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
-                    text = "Pemantauan Smartwatch",
+                    text = strings.smartwatchMonitoring,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
                     color = TextDark,
@@ -411,7 +504,7 @@ fun HomeScreen(
                 // Row 1: Heart Rate + Motion
                 Row(modifier = Modifier.fillMaxWidth()) {
                     MetricCard(
-                        title = "Detak Jantung",
+                        title = strings.heartRateTitle,
                         value = if (state.healthMetrics.heartRate > 0)
                             "${state.healthMetrics.heartRate}"
                         else if (state.bleState == BleConnectionState.CONNECTED)
@@ -419,7 +512,7 @@ fun HomeScreen(
                         else
                             "0",
                         unit = "bpm",
-                        status = state.healthMetrics.heartRateState,
+                        status = if (state.healthMetrics.heartRateState.equals("Menunggu Sensor", ignoreCase = true)) strings.heartRateWaiting else state.healthMetrics.heartRateState,
                         icon = Icons.Default.Favorite,
                         iconColor = SosRed,
                         iconBg = SoftRed,
@@ -427,16 +520,16 @@ fun HomeScreen(
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     MetricCard(
-                        title = "Sensor Gerak",
+                        title = strings.motionSensorTitle,
                         value = if (state.bleState == BleConnectionState.CONNECTED)
                             state.healthMetrics.motionState
                         else
-                            "Diam",
+                            strings.motionStill,
                         unit = "",
                         status = if (state.bleState == BleConnectionState.CONNECTED)
                             "AX: ${String.format("%.2f", state.healthMetrics.mpuData.ax)}g | AY: ${String.format("%.2f", state.healthMetrics.mpuData.ay)}g"
                         else
-                            "Alat terputus",
+                            strings.motionDeviceDisconnected,
                         icon = Icons.Default.DirectionsRun,
                         iconColor = Maroon,
                         iconBg = SoftPeach,
@@ -449,16 +542,16 @@ fun HomeScreen(
                 // Row 2: Battery + GPS
                 Row(modifier = Modifier.fillMaxWidth()) {
                     MetricCard(
-                        title = "Status Daya Alat",
+                        title = strings.powerStatusLabel,
                         value = if (state.bleState == BleConnectionState.CONNECTED)
                             (if (state.healthMetrics.isUsbPowered) "USB" else "${state.healthMetrics.batteryPercent}%")
                         else
                             "Offline",
                         unit = if (state.bleState == BleConnectionState.CONNECTED && state.healthMetrics.isUsbPowered) "⚡" else "",
                         status = if (state.bleState == BleConnectionState.CONNECTED)
-                            (if (state.healthMetrics.isUsbPowered) "Daya USB Aktif" else "Baterai Normal")
+                            (if (state.healthMetrics.isUsbPowered) strings.powerUsbActive else strings.powerBatteryNormal)
                         else
-                            "Alat belum tersambung",
+                            strings.powerDeviceDisconnected,
                         icon = if (state.healthMetrics.isUsbPowered) Icons.Default.Power else Icons.Default.BatteryStd,
                         iconColor = GreenSafe,
                         iconBg = SoftGreen,
@@ -466,8 +559,8 @@ fun HomeScreen(
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     MetricCard(
-                        title = "Lokasi GPS",
-                        value = "Aktif",
+                        title = strings.gpsLocationLabel,
+                        value = strings.gpsActiveText,
                         unit = "",
                         status = "Makassar, ID",
                         icon = Icons.Default.LocationOn,
@@ -503,7 +596,7 @@ fun HomeScreen(
                                     )
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Text(
-                                        text = "Telemetri MPU6050 Real-time",
+                                        text = strings.mpuTelemetryTitle,
                                         fontSize = 12.sp,
                                         fontWeight = FontWeight.Bold,
                                         color = TextDark
@@ -532,7 +625,7 @@ fun HomeScreen(
                             ) {
                                 Column(modifier = Modifier.weight(1f)) {
                                     Text(
-                                        text = "Akselerasi (g):",
+                                        text = strings.accelerationLabel,
                                         fontSize = 10.sp,
                                         color = TextGray,
                                         fontWeight = FontWeight.Medium
@@ -546,7 +639,7 @@ fun HomeScreen(
                                 }
                                 Column(modifier = Modifier.weight(1f)) {
                                     Text(
-                                        text = "Gyroscope (°/s):",
+                                        text = strings.gyroscopeLabel,
                                         fontSize = 10.sp,
                                         color = TextGray,
                                         fontWeight = FontWeight.Medium
@@ -604,7 +697,7 @@ fun HomeScreen(
                                 letterSpacing = 2.sp
                             )
                             Text(
-                                text = "DARURAT",
+                                text = strings.sosEmergencyLabel,
                                 color = Peach,
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.Bold
@@ -654,7 +747,7 @@ fun HomeScreen(
                     QuickActionItem(
                         icon = Icons.Default.Shield,
                         label = strings.actionPolice,
-                        onClick = { onNavigate(Screen.PoliceDashboard) }
+                        onClick = { onNavigate(Screen.Emergency) }
                     )
                 }
 
@@ -697,7 +790,7 @@ fun HomeScreen(
                                     victimName = "Ahmad Pratama",
                                     locationAddress = "Jl. Perintis Kemerdekaan KM 10",
                                     distanceText = "250 m",
-                                    etaText = "3 mnt",
+                                    etaText = "3 ${strings.minutesAbbr}",
                                     heartRate = 132
                                 )
                                 // 1. Munculkan pop-up dialog in-app

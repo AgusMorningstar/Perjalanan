@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.example.perjalanan.ui.localization.LocalAppStrings
+import com.example.perjalanan.ui.theme.LocalAppColors
 import com.example.perjalanan.ui.navigation.Screen
 import com.example.perjalanan.ui.theme.CardBg
 import com.example.perjalanan.ui.theme.Maroon
@@ -33,11 +34,12 @@ fun PerjalananBottomBar(
     onNavigate: (Screen) -> Unit
 ) {
     val strings = LocalAppStrings.current
+    val colors = LocalAppColors.current
     val items = listOf(
         BottomNavItem(Screen.Home, strings.navHome, Icons.Default.Home),
         BottomNavItem(Screen.Map, strings.navMap, Icons.Default.Place),
-        BottomNavItem(Screen.Profile, strings.navProfile, Icons.Default.Person),
-        BottomNavItem(Screen.Emergency, strings.navEmergency, Icons.Default.Phone)
+        BottomNavItem(Screen.Emergency, strings.navEmergency, Icons.Default.Phone),
+        BottomNavItem(Screen.Profile, strings.navProfile, Icons.Default.Person)
     )
 
     NavigationBar(

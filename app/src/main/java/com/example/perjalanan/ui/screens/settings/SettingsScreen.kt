@@ -38,12 +38,8 @@ import com.example.perjalanan.data.model.Language
 import com.example.perjalanan.data.model.ThemeMode
 import com.example.perjalanan.ui.components.PerjalananTopBar
 import com.example.perjalanan.ui.localization.LocalAppStrings
-import com.example.perjalanan.ui.theme.CardBg
-import com.example.perjalanan.ui.theme.Cream
+import com.example.perjalanan.ui.theme.LocalAppColors
 import com.example.perjalanan.ui.theme.Maroon
-import com.example.perjalanan.ui.theme.StrokeColor
-import com.example.perjalanan.ui.theme.TextDark
-import com.example.perjalanan.ui.theme.TextGray
 
 @Composable
 fun SettingsScreen(
@@ -53,13 +49,14 @@ fun SettingsScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
     val strings = LocalAppStrings.current
+    val colors = LocalAppColors.current
 
     // THEME DIALOG
     if (state.isThemeDialogVisible) {
         AlertDialog(
             onDismissRequest = viewModel::closeThemeDialog,
             shape = RoundedCornerShape(20.dp),
-            containerColor = CardBg,
+            containerColor = colors.cardBackground,
             title = {
                 Text(text = strings.selectThemeTitle, fontWeight = FontWeight.Bold, color = Maroon)
             },
@@ -96,7 +93,7 @@ fun SettingsScreen(
         AlertDialog(
             onDismissRequest = viewModel::closeLanguageDialog,
             shape = RoundedCornerShape(20.dp),
-            containerColor = CardBg,
+            containerColor = colors.cardBackground,
             title = {
                 Text(text = strings.changeLanguageTitle, fontWeight = FontWeight.Bold, color = Maroon)
             },
@@ -130,7 +127,7 @@ fun SettingsScreen(
                 onBackClick = onNavigateBack
             )
         },
-        containerColor = Cream
+        containerColor = colors.screenBackground
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -141,9 +138,9 @@ fun SettingsScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = CardBg),
+                colors = CardDefaults.cardColors(containerColor = colors.cardBackground),
                 border = CardDefaults.outlinedCardBorder().copy(
-                    brush = androidx.compose.ui.graphics.SolidColor(StrokeColor)
+                    brush = androidx.compose.ui.graphics.SolidColor(colors.strokeColor)
                 )
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
@@ -167,7 +164,7 @@ fun SettingsScreen(
                         onClick = viewModel::openThemeDialog
                     )
 
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = StrokeColor)
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = colors.strokeColor)
 
                     // Language Row
                     SettingItemRow(
@@ -180,7 +177,7 @@ fun SettingsScreen(
                         onClick = viewModel::openLanguageDialog
                     )
 
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = StrokeColor)
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = colors.strokeColor)
 
                     // Onboarding Guide Row
                     SettingItemRow(
@@ -197,13 +194,13 @@ fun SettingsScreen(
             Text(
                 text = strings.appVersionInfo,
                 fontSize = 11.sp,
-                color = TextGray,
+                color = colors.textSecondary,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
             Text(
                 text = strings.appSecurityNotice,
                 fontSize = 11.sp,
-                color = TextGray,
+                color = colors.textSecondary,
                 modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 2.dp)
             )
         }
@@ -217,6 +214,7 @@ fun SettingItemRow(
     currentValue: String,
     onClick: () -> Unit
 ) {
+    val colors = LocalAppColors.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -231,7 +229,7 @@ fun SettingItemRow(
                 text = title,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
-                color = TextDark,
+                color = colors.textPrimary,
                 modifier = Modifier.padding(start = 12.dp)
             )
         }
@@ -250,6 +248,7 @@ fun ThemeOptionRow(
     selected: Boolean,
     onClick: () -> Unit
 ) {
+    val colors = LocalAppColors.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -265,7 +264,7 @@ fun ThemeOptionRow(
         Text(
             text = title,
             fontSize = 14.sp,
-            color = TextDark,
+            color = colors.textPrimary,
             modifier = Modifier.padding(start = 8.dp)
         )
     }

@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <resources>
 
     <!-- Aplikasi -->
@@ -20,33 +19,102 @@
     <string name="send_link">KIRIM LINK</string>
     <string name="back_to_login">Kembali ke login</string>
     <string name="skip">Skip ›</string>
+    <string name="or_divider">atau</string>
+    <string name="sign_in_google">Masuk dengan Google</string>
+    <string name="sign_up_google">Daftar dengan Google</string>
+    <string name="no_account">Belum punya akun? </string>
+    <string name="have_account">Sudah punya akun? </string>
+    <string name="register_here">Daftar</string>
+    <string name="login_here">Login</string>
 
     <!-- Navigasi -->
     <string name="nav_home">Beranda</string>
-    <string name="nav_location">Lokasi</string>
+    <string name="nav_location">Peta</string>
     <string name="nav_profile">Profil</string>
     <string name="nav_emergency">Darurat</string>
+    <string name="nav_dashboard">Dashboard</string>
 
-    <!-- Dashboard -->
+    <!-- Dashboard dan Kesehatan -->
     <string name="dashboard_title">Dashboard</string>
     <string name="heart_rate">Detak Jantung</string>
     <string name="motion_sensor">Sensor Gerak</string>
-    <string name="watch_status">Status Jam Tangan SOS</string>
+    <string name="watch_status">Status Smartwatch SOS</string>
     <string name="device_connected">Terhubung</string>
     <string name="device_disconnected">Belum Terhubung</string>
+    <string name="live_bpm_motion">Menerima data BPM &amp; Gerak secara live</string>
+    <string name="tap_to_connect">Ketuk untuk hubungkan perangkat</string>
+    <string name="manage">Kelola</string>
+    <string name="connect">Hubungkan</string>
 
-    <!-- Lokasi -->
+    <!-- Tombol SOS dan Aksi Cepat -->
+    <string name="sos_card_title">Tombol SOS Darurat</string>
+    <string name="sos_card_sub">Tahan 3 detik dalam situasi berbahaya</string>
+    <string name="sos_hint">Ketuk tombol untuk mengirim sinyal darurat</string>
+    <string name="quick_actions">Aksi Cepat</string>
+    <string name="action_call_110">Darurat 110</string>
+    <string name="action_victim_map">Peta Korban</string>
+    <string name="action_share">Bagikan</string>
+    <string name="action_police">Polisi</string>
+
+    <!-- Lokasi dan Peta -->
     <string name="location_title">Lokasi Korban</string>
     <string name="start_navigation">Mulai Navigasi</string>
     <string name="waiting_location">Menunggu lokasi korban...</string>
+    <string name="radius_zone">Radius Zona: ±150 meter</string>
+    <string name="status_critical">Kritis</string>
+    <string name="monitoring_map_title">PETA MONITORING DARURAT</string>
 
     <!-- Profil -->
-    <string name="profile_title">Profil Saya</string>
+    <string name="profile_title">Profil Pengguna</string>
+    <string name="police_profile_title">Profil Petugas</string>
     <string name="role">Role</string>
     <string name="settings">Pengaturan</string>
     <string name="logout">Keluar</string>
+    <string name="account_info">Informasi Akun</string>
+    <string name="duty_info">Informasi Tugas</string>
+    <string name="identity_number">Nomor Identitas</string>
+    <string name="duty_unit">Unit Tugas</string>
+    <string name="headquarters">Markas / Polsek</string>
+    <string name="app_settings">Pengaturan Aplikasi</string>
+    <string name="app_settings_sub">Tema, bahasa, dan preferensi</string>
+    <string name="change_password">Ubah Password</string>
+    <string name="logout_confirm">Konfirmasi Keluar</string>
+    <string name="logout_message">Apakah Anda yakin ingin keluar dari sesi ini?</string>
 
-    <!-- Darurat -->
+    <!-- Dashboard Polisi -->
+    <string name="police_dashboard_title">Dashboard Kepolisian</string>
+    <string name="active_reports">Aktif</string>
+    <string name="resolved_reports">Selesai</string>
+    <string name="standby_units">Unit Siaga</string>
+    <string name="sos_siren_alarm">Alarm Sirine SOS</string>
+    <string name="alarm_active_desc">Perangkat AKTIF berbunyi</string>
+    <string name="alarm_inactive_desc">Alarm NONAKTIF</string>
+    <string name="stop_alarm_now">Matikan Alarm Sekarang</string>
+    <string name="incoming_sos_reports">Laporan Sinyal Darurat Masuk</string>
+    <string name="accept_handle_report">Terima &amp; Tangani Laporan</string>
+    <string name="report_handled">✓ Laporan Sedang Ditangani</string>
+
+    <!-- Layar Pengaturan -->
+    <string name="preferences">Preferensi</string>
+    <string name="app_theme">Tema Aplikasi</string>
+    <string name="language">Bahasa</string>
+    <string name="onboarding_guide">Panduan Aplikasi (Onboarding)</string>
+    <string name="theme_light">Terang</string>
+    <string name="theme_dark">Gelap</string>
+    <string name="theme_system">Ikuti Sistem</string>
+    <string name="close">Tutup</string>
+
+    <!-- Pop-up Dialog Darurat -->
+    <string name="sos_dialog_tag">SINYAL SOS - PRIORITAS TINGGI</string>
+    <string name="sos_dialog_title">Laporan darurat baru</string>
+    <string name="distance">Jarak</string>
+    <string name="eta">Estimasi</string>
+    <string name="heartbeat">Detak</string>
+    <string name="accept_and_view_location">Terima &amp; Lihat Lokasi</string>
+    <string name="mute_alarm">Matikan Alarm</string>
+    <string name="later">Nanti</string>
+
+    <!-- Nomor Darurat -->
     <string name="emergency_title">Nomor Darurat</string>
     <string name="police_number">110</string>
     <string name="call_police">Hubungi Polisi</string>
@@ -57,13 +125,13 @@
     <string name="ob_next">Lanjut</string>
     <string name="ob_start">Mulai Sekarang</string>
 
-    <!-- Onboarding Page 1 -->
+    <!-- Onboarding Halaman 1 -->
     <string name="ob1_bubble">Hai! Aku Si Jaga, teman setiamu dalam setiap perjalanan. Ayo kenalan dulu!</string>
     <string name="ob1_tag">SELAMAT DATANG</string>
     <string name="ob1_title">Perjalanan Aman &amp; Terlindungi</string>
     <string name="ob1_body">Aplikasi pendamping cerdas yang terhubung langsung dengan smartwatch SOS untuk menjaga keselamatanmu di mana pun kamu berada.</string>
 
-    <!-- Onboarding Page 2 -->
+    <!-- Onboarding Halaman 2 -->
     <string name="ob2_bubble">Detak jantung dan gerakan tubuhmu dipantau otomatis secara live oleh smartwatch lho!</string>
     <string name="ob2_card1_title">Detak Jantung</string>
     <string name="ob2_card1_desc">Pantau ritme &amp; anomali panik</string>
@@ -73,7 +141,7 @@
     <string name="ob2_title">Deteksi Dini Bahaya</string>
     <string name="ob2_body">Sensor canggih membaca kondisi biologis dan gerak tubuhmu secara real-time untuk mendeteksi situasi genting.</string>
 
-    <!-- Onboarding Page 3 -->
+    <!-- Onboarding Halaman 3 -->
     <string name="ob3_bubble">Tekan tombol SOS kapan pun kamu butuh pertolongan darurat!</string>
     <string name="ob3_f1">Lokasi GPS</string>
     <string name="ob3_f2">Siaga Polisi</string>
